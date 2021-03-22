@@ -1,25 +1,39 @@
 import React from 'react';
-// import PropTypes from "prop-types";
+import axios from 'axios';
+import Game from './Game.js';
 
 class App extends React.Component {
 	state = {
-		count: 0
+		isLoading: true,
+		games: []
 	};
 
-	plus = () => {
-		this.setState(current => ({ count: current.count + 1 }));
-	};
+	async getGames() {
+		const data = await axios.get('https://yts-proxy.nomadcoders1.now.sh/list_movies.json');
+		const games = data.data.data.movies;
+		console.log(games);
+		this.setState({ games: games, isLoading: false });
+	}
 
-	minus = () => {
-		this.setState(current => ({ count: current.count - 1 }));
-	};
+	componentDidMount() {
+		this.getGames();
+	}
 
 	render() {
+		const { isLoading, games } = this.state;
+
 		return (
 			<div>
-				<h1>The number is {this.state.count}</h1>
-				<button onClick={this.plus}>plus</button>
-				<button onClick={this.minus}>minus</button>
+				{isLoading ? "Loading..." : games.map(game => (
+					<Game
+						key={game.id}
+						id={game.id}
+						year={game.year}
+						title={game.title}
+						summary={game.summary}
+						poster={game.medium_cover_image}
+					/>
+				))}
 			</div>
 		);
 	}
