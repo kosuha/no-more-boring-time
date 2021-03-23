@@ -5,13 +5,13 @@ import Home from "./routes/Home";
 import MyPage from "./routes/MyPage";
 import PlayGame from "./routes/PlayGame";
 
-function App(params) {
+function App() {
 	return (
 		<BrowserRouter>
 			<Nav />
 			<Route path="/" exact={true} component={Home} />
 			<Route path="/user" component={MyPage} />
-			<Route path="/play-game" component={PlayGame} />
+			<Route path="/play/:id" component={PlayGame} />
 		</BrowserRouter>
 	);
 }

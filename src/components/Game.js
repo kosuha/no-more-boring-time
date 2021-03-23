@@ -3,10 +3,10 @@ import PropTypes from 'prop-types';
 import { Link } from "react-router-dom";
 import "./Game.css";
 
-function Game({ year, title, summary, poster, genres }) {
+function Game({ id, year, title, summary, poster, genres }) {
     return (
         <Link to={{
-            pathname:"/play-game",
+            pathname: `/play/${id}`,
             state: {
                 year,
                 title,
