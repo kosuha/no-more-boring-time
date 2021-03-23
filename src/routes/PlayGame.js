@@ -10,10 +10,14 @@ class PlayGame extends React.Component {
 
     render() {
         const { state } = this.props.location;
-
-        return (
-            <span>{state.title}</span>
-        );
+        if (state) {
+            return (
+                <span>{state.title}</span>
+            );
+        } else {
+            return null;
+        }
+        
     }
 }
 
