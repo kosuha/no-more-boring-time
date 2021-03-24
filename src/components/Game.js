@@ -5,30 +5,30 @@ import "./Game.css";
 
 function Game({ id, year, title, summary, poster, genres }) {
     return (
-        <Link to={{
-            pathname: `/play/${id}`,
-            state: {
-                year,
-                title,
-                summary,
-                poster,
-                genres
-            }
-        }}>
-            <div>
+        <div className="game">
+            <Link to={{
+                pathname: `/play/${id}`,
+                state: {
+                    year,
+                    title,
+                    summary,
+                    poster,
+                    genres
+                }
+            }}>
                 <img src={poster} alt={title} title={title} />
                 <div className="game__data">
                     <h3 className="game__title">{title}</h3>
                     <h5 className="game__year">{year}</h5>
                     <ul className="game__genres">
                         {genres.map((genre, index) => (
-                            <li key={index} className="game__genres__genre">{genre}</li>
+                            <li key={index} className="genres__genre">{genre}</li>
                         ))}
                     </ul>
-                    <p className="game__summary">{summary}</p>
+                    <p className="game__summary">{summary.slice(0, 180)}...</p>
                 </div>
-            </div>
-        </Link>
+            </Link>
+        </div>
     );
 }
 

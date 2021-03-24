@@ -4,6 +4,7 @@ import { BrowserRouter, Route } from 'react-router-dom';
 import Home from "./routes/Home";
 import MyPage from "./routes/MyPage";
 import PlayGame from "./routes/PlayGame";
+import "./App.css";
 
 function App() {
 	return (
