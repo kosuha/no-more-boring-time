@@ -1,4 +1,6 @@
 import React from 'react';
+import "./PlayGame.css";
+import Canvas from '../components/Canvas.js';
 
 class PlayGame extends React.Component {
     componentDidMount() {
@@ -11,13 +13,21 @@ class PlayGame extends React.Component {
     render() {
         const { state } = this.props.location;
         if (state) {
+            console.log(state);
             return (
-                <span>{state.title}</span>
+                <div className="playGame">
+                    <h3 className="playGame__title">{state.title}</h3>
+                    <Canvas
+                        key={state.id}
+                        id={state.id}
+                        title={state.title}
+                    />
+                </div>
             );
         } else {
             return null;
         }
-        
+
     }
 }
 

@@ -1,0 +1,13 @@
+.playGame {
+    display: flex;
+    flex-direction: column;
+    padding-top: 50px;
+    padding: 5px;
+    text-align: center;
+    align-items: center;
+}
+
+.playGame__title {
+    padding-right: 5px;
+}
+

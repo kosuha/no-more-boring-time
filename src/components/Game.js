@@ -9,6 +9,7 @@ function Game({ id, year, title, summary, poster, genres }) {
             <Link to={{
                 pathname: `/play/${id}`,
                 state: {
+                    id,
                     year,
                     title,
                     summary,
