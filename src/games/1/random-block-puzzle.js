@@ -1,10 +1,11 @@
+const id = '1';
 
 const sun = new Image();
 const moon = new Image();
 const earth = new Image();
 
 function init() {
-    const canvas = document.getElementById('29367');
+    const canvas = document.getElementById(id);
     if (canvas) {
         sun.src = 'https://mdn.mozillademos.org/files/1456/Canvas_sun.png';
         moon.src = 'https://mdn.mozillademos.org/files/1443/Canvas_moon.png';
@@ -14,7 +15,7 @@ function init() {
 }
 
 function draw() {
-    let ctx = document.getElementById('29367').getContext('2d');
+    let ctx = document.getElementById(id).getContext('2d');
 
     ctx.globalCompositeOperation = 'destination-over';
     ctx.clearRect(0, 0, 1000, 1000); // 캔버스를 비운다

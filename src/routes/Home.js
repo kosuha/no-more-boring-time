@@ -10,9 +10,9 @@ class Home extends React.Component {
 	};
 
 	async getGames() {
-		const data = await axios.get('https://yts-proxy.nomadcoders1.now.sh/list_movies.json');
-		const games = data.data.data.movies;
-		console.log(games);
+		const data = await axios.get('http://localhost:3001/api');
+		console.log(data);
+		const games = data.data;
 		this.setState({ games: games, isLoading: false });
 	}
 
