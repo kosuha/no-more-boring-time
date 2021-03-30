@@ -5,11 +5,11 @@ router.get('/', (req, res) => {
     console.log('http://localhost:3001/api/');
     const data = [
         {
-            id: 1,
-            title: "랜덤블록퍼즐",
-            summary: "테트리스 같은 게임.",
+            id: 2,
+            title: "포커",
+            summary: "텍사스 홀덤.",
             year: 2021,
-            genres: ["puzzle"],
+            genres: ["card"],
             medium_cover_image: "https://yts.mx/assets/images/movies/these_streets_we_haunt_2021/medium-cover.jpg"
         }
     ];

@@ -1,11 +1,11 @@
 import React from 'react';
 import "./Canvas.css";
 
-import * as random_block_puzzle from "../games/1/random-block-puzzle.js";
+import * as poker from "../games/2/poker.js";
 
 class Canvas extends React.Component {
     componentDidMount() {
-        random_block_puzzle.init();
+        poker.init();
     }
 
     render() {
