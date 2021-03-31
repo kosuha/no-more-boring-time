@@ -17,7 +17,6 @@ function draw() {
     ctx.globalCompositeOperation = 'destination-over';
     ctx.clearRect(0, 0, 1000, 1000); // 캔버스를 비운다
 
-
 }
 
 class Player {
@@ -29,7 +28,53 @@ class Player {
         this.seat = seat;
         this.chips = 1000;
         this.hand = [];
+        this.fold = false;
     }
+
+    action() {
+        const input = '';
+
+        if (input === 'check') {
+            check();
+        }
+
+        if (input === 'call') {
+            call();
+        }
+
+        if (input === 'raise') {
+            raise();
+        }
+    }
+
+    smallBlind() {
+        
+    }
+
+    bigBlind() {
+        
+    }
+
+    check() {
+
+    }
+
+    call() {
+
+    }
+
+    raise() {
+        
+    }
+
+    fold() {
+        this.fold = true;
+    }
+
+    isFold() {
+        return this.fold;
+    }
+
 }
 
 class Dealer {
@@ -37,6 +82,9 @@ class Dealer {
         this.suits = ['club', 'heart', 'spade', 'diamond'];
         this.orders = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
         this.mixTimes = 3;
+        this.bigBlindBet = 2;
+        this.smallBlindBet = 1;
+        this.pot = 0;
         this.players = [];
         this.cards = [];
         this.flop = [];
@@ -99,7 +147,8 @@ class Dealer {
         for (let i = 0; i < playerData.length; i++) {
             this.players.push(new Player(playerData[i], i));
         }
-        
+
+        this.playersOrder = this.players;
     }
 
     preflop() {
@@ -110,6 +159,12 @@ class Dealer {
         }
         console.log(this.players);
     }
+
+    action() {
+    
+
+        goNext();
+    }    
 }
 
 class Card {
