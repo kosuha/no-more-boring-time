@@ -1,23 +1,53 @@
 const id = '2';
 
+
 function init() {
     const canvas = document.getElementById(id);
+    let ctx = canvas.getContext('2d');
+    
     if (canvas) {
+
         const dealer = new Dealer();
         dealer.startGame();
-
-
+        ctx.fillStyle = 'rgb(100, 100, 100)';
         setInterval(draw, 100);
+
     }
 }
 
 function draw() {
     let ctx = document.getElementById(id).getContext('2d');
-
     ctx.globalCompositeOperation = 'destination-over';
-    ctx.clearRect(0, 0, 1000, 1000); // 캔버스를 비운다
+    ctx.clearRect(0, 0, 1000, 1000);
 
+
+    clickEvent(ctx);
+    ctx.fillRect(450, 450, 100, 100);
 }
+
+function getMousePos(e) {
+    const canvas = document.getElementById(id);
+    const rect = canvas.getBoundingClientRect();
+    return {
+        x: ((e.clientX - rect.left) / rect.height) * 1000,
+        y: ((e.clientY - rect.top) / rect.width) * 1000,
+    };
+}
+
+function clickEvent(ctx) {
+    const canvas = document.getElementById(id);
+    canvas.addEventListener('click' || 'touchstart', (e) => {
+        const mouse = getMousePos(e);
+
+        if (450 < mouse.x && mouse.x < 550 &&
+            450 < mouse.y && mouse.y < 550) {
+            ctx.fillStyle = 'rgb(0, 0, 100)';
+            console.log('hi');
+        }
+
+    })
+}
+
 
 class Player {
     constructor(user, seat) {
@@ -25,34 +55,37 @@ class Player {
             id: user.id,
             name: user.name
         };
-        this.seat = seat;
         this.chips = 1000;
         this.hand = [];
         this.fold = false;
     }
 
     action() {
-        const input = '';
+        const input = ''; // 인풋 받기 
 
         if (input === 'check') {
-            check();
+            this.check();
         }
 
         if (input === 'call') {
-            call();
+            this.call();
         }
 
         if (input === 'raise') {
-            raise();
+            this.raise();
+        }
+
+        if (input === 'fold') {
+            this.fold();
         }
     }
 
     smallBlind() {
-        
+
     }
 
     bigBlind() {
-        
+
     }
 
     check() {
@@ -64,7 +97,7 @@ class Player {
     }
 
     raise() {
-        
+
     }
 
     fold() {
@@ -85,6 +118,7 @@ class Dealer {
         this.bigBlindBet = 2;
         this.smallBlindBet = 1;
         this.pot = 0;
+        this.waitPlayers = [];
         this.players = [];
         this.cards = [];
         this.flop = [];
@@ -94,7 +128,8 @@ class Dealer {
 
     startGame() {
         this.setCards();
-        this.setPlayers();
+        this.setWaitPlayers();
+        this.joinWaitPlayers();
         this.preflop();
     }
 
@@ -127,7 +162,7 @@ class Dealer {
         return Math.floor(Math.random() * (max - min)) + min; //최댓값은 제외, 최솟값은 포함
     }
 
-    setPlayers() {
+    setWaitPlayers() {
         // 서버에서 접속자 정보를 가져와서 객체 생성
         const playerData = [
             {
@@ -145,10 +180,12 @@ class Dealer {
         ];
 
         for (let i = 0; i < playerData.length; i++) {
-            this.players.push(new Player(playerData[i], i));
+            this.waitPlayers.push(new Player(playerData[i], i));
         }
+    }
 
-        this.playersOrder = this.players;
+    joinWaitPlayers() {
+        this.players = this.waitPlayers;
     }
 
     preflop() {
@@ -161,10 +198,13 @@ class Dealer {
     }
 
     action() {
-    
-
-        goNext();
-    }    
+        let actionOrder = this.players;
+        let i = 0;
+        while (i < actionOrder.length) {
+            actionOrder[i].action();
+            i++;
+        }
+    }
 }
 
 class Card {
