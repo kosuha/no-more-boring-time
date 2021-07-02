@@ -10,6 +10,10 @@ app.get('/', (request, response) => {
     response.sendFile(__dirname + '/index.html');
 });
 
+app.get('/covid-19', (request, response) => {
+    response.sendFile(__dirname + '/covid-19.html');
+});
+
 app.listen(80, () => {
     console.log('app run!')
 });
