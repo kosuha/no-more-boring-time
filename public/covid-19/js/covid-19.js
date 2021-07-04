@@ -18,8 +18,8 @@ const config = {
 
 const game = new Phaser.Game(config);
 
-let score = 0;
-let scoreText;
+let life = 3;
+let lifeText;
 
 function preload () {
     console.log("a")
@@ -36,22 +36,24 @@ function create () {
     this.add.image(400, 300, 'sky');
     
     platforms = this.physics.add.staticGroup();
+    starEnd = this.physics.add.staticGroup();
 
-    platforms.create(400, 568, 'ground').setScale(2).refreshBody();
+    platforms.create(400, 600, 'ground').setScale(2).refreshBody();
+    starEnd.create(400, 800, 'ground').setScale(4).refreshBody();
 
-    platforms.create(600, 400, 'ground');
-    platforms.create(50, 250, 'ground');
-    platforms.create(750, 220, 'ground');
+    // platforms.create(600, 400, 'ground');
+    // platforms.create(50, 250, 'ground');
+    // platforms.create(750, 220, 'ground');
 
     player = this.physics.add.sprite(100, 450, 'dude');
 
-    player.setBounce(0.2);
+    // player.setBounce(0.2);
     player.setCollideWorldBounds(true);
 
     this.anims.create({
         key: 'left',
         frames: this.anims.generateFrameNumbers('dude', { start: 0, end: 3 }),
-        frameRate: 10,
+        frameRate: 20,
         repeat: -1
     });
 
@@ -70,24 +72,19 @@ function create () {
 
     this.physics.add.collider(player, platforms);
 
+    // this.physics.add.sprite(randomInt(12, 800), randomInt(-100, -300), 'star');
     stars = this.physics.add.group({
         key: 'star',
-        repeat: 11,
-        setXY: { x: 12, y: 0, stepX: 70 }
+        repeat: 10,
+        setXY: { x: -100, y: randomInt(-100, -1000) }
     })
-    
-    stars.children.iterate(function (child) {
-        child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
-    });
 
-    this.physics.add.collider(stars, platforms);
-    this.physics.add.overlap(player, stars, collectStar, null, this);
+    this.physics.add.overlap(starEnd, stars, collectStar, null, this);
 
-    scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
+    this.physics.add.overlap(player, stars, hit, null, this);
 
-    bombs = this.physics.add.group();
-    this.physics.add.collider(bombs, platforms);
-    this.physics.add.collider(player, bombs, hitBomb, null, this);
+    lifeText = this.add.text(16, 16, 'Life: 3', { fontSize: '32px', fill: '#000' });
+
 }
 
 function update () {
@@ -95,45 +92,44 @@ function update () {
 
     if (cursors.left.isDown) {
         player.setVelocityX(-160);
-
         player.anims.play('left', true);
+
     } else if (cursors.right.isDown) {
         player.setVelocityX(160);
-
         player.anims.play('right', true);
+
     } else {
         player.setVelocityX(0);
-
         player.anims.play('turn');
     }
 
-    if (cursors.up.isDown && player.body.touching.down) {
-        player.setVelocityY(-330);
-    }
 }
 
 function collectStar (player, star){
     star.disableBody(true, true);
-    score += 10;
-    scoreText.setText('Score: ' + score);
-
-    if (stars.countActive(true) === 0) {
-        stars.children.iterate(function (child) {
-            child.enableBody(true, child.x, 0, true, true);
-        });
-
-        let x = (player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
-
-        let bomb = bombs.create(x, 16, 'bomb');
-        bomb.setBounce(1);
-        bomb.setCollideWorldBounds(true);
-        bomb.setVelocity(Phaser.Math.Between(-200, 200), 20);
-    }
+    star.enableBody(true, randomInt(12, 800), randomInt(-100, -1000), true, true);
+    // let x = (player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
 }
 
-function hitBomb (player, bomb) {
+function hit (player, star) {
+    star.disableBody(true, true);
+    life -= 1;
+    lifeText.setText('Life: ' + life);
+    star.enableBody(true, randomInt(12, 800), randomInt(-100, -1000), true, true);
+
+    if (life === -1) {
+        gameover(player)
+    }
+
+}
+
+function gameover (player) {
     this.physics.pause();
     player.setTint(0xff0000);
     player.anims.play('turn');
     gameOver = true;
+}
+
+function randomInt (min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
 }
