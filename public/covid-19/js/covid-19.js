@@ -23,17 +23,17 @@ let lifeText;
 
 function preload () {
     console.log("a")
-    this.load.image('sky', 'images/sky.png');
+    this.load.image('background', 'images/background.png');
     this.load.image('ground', 'images/platform.png');
     this.load.image('covid', 'images/covid.png');
     this.load.image('bomb', 'images/bomb.png');
     this.load.spritesheet('dude', 'images/dude.png',
-        {frameWidth : 32, frameHeight : 48}
+        {frameWidth : 33.3, frameHeight : 39}
     );
 }
 
 function create () {
-    this.add.image(400, 300, 'sky');
+    this.add.image(400, 300, 'background');
     
     platforms = this.physics.add.staticGroup();
     starEnd = this.physics.add.staticGroup();
@@ -52,21 +52,22 @@ function create () {
 
     this.anims.create({
         key: 'left',
-        frames: this.anims.generateFrameNumbers('dude', { start: 0, end: 3 }),
-        frameRate: 20,
+        frames: this.anims.generateFrameNumbers('dude', { start: 0, end: 1 }),
+        frameRate: 5,
         repeat: -1
     });
 
     this.anims.create({
         key: 'turn',
-        frames: [ { key: 'dude', frame: 4 } ],
-        frameRate: 20
+        frames: this.anims.generateFrameNumbers('dude', { start: 2, end: 3 }),
+        frameRate: 5,
+        repeat: -1
     });
 
     this.anims.create({
         key: 'right',
-        frames: this.anims.generateFrameNumbers('dude', { start: 5, end: 8 }),
-        frameRate: 10,
+        frames: this.anims.generateFrameNumbers('dude', { start: 4, end: 5 }),
+        frameRate: 5,
         repeat: -1
     });
 
@@ -100,7 +101,7 @@ function update () {
 
     } else {
         player.setVelocityX(0);
-        player.anims.play('turn');
+        player.anims.play('turn', true);
     }
 
 }
