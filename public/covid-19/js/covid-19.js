@@ -5,7 +5,7 @@ const config = {
     physics: {
         default: 'arcade',
         arcade: {
-            gravity: { y: 300 },
+            gravity: { y: 200 },
             debug: false
         }
     },
@@ -25,7 +25,7 @@ function preload () {
     console.log("a")
     this.load.image('sky', 'images/sky.png');
     this.load.image('ground', 'images/platform.png');
-    this.load.image('star', 'images/star.png');
+    this.load.image('covid', 'images/covid.png');
     this.load.image('bomb', 'images/bomb.png');
     this.load.spritesheet('dude', 'images/dude.png',
         {frameWidth : 32, frameHeight : 48}
@@ -73,15 +73,15 @@ function create () {
     this.physics.add.collider(player, platforms);
 
     // this.physics.add.sprite(randomInt(12, 800), randomInt(-100, -300), 'star');
-    stars = this.physics.add.group({
-        key: 'star',
-        repeat: 10,
-        setXY: { x: -100, y: randomInt(-100, -1000) }
+    covids = this.physics.add.group({
+        key: 'covid',
+        repeat: 20,
+        setXY: { x: -100, y: randomInt(-100, -2000) }
     })
 
-    this.physics.add.overlap(starEnd, stars, collectStar, null, this);
+    this.physics.add.overlap(starEnd, covids, collectStar, null, this);
 
-    this.physics.add.overlap(player, stars, hit, null, this);
+    this.physics.add.overlap(player, covids, hit, null, this);
 
     lifeText = this.add.text(16, 16, 'Life: 3', { fontSize: '32px', fill: '#000' });
 
@@ -91,11 +91,11 @@ function update () {
     cursors = this.input.keyboard.createCursorKeys();
 
     if (cursors.left.isDown) {
-        player.setVelocityX(-160);
+        player.setVelocityX(-200);
         player.anims.play('left', true);
 
     } else if (cursors.right.isDown) {
-        player.setVelocityX(160);
+        player.setVelocityX(200);
         player.anims.play('right', true);
 
     } else {
@@ -105,21 +105,21 @@ function update () {
 
 }
 
-function collectStar (player, star){
-    star.disableBody(true, true);
-    star.enableBody(true, randomInt(12, 800), randomInt(-100, -1000), true, true);
+function collectStar (player, covid){
+    covid.disableBody(true, true);
+    covid.enableBody(true, randomInt(12, 800), randomInt(-100, -1000), true, true);
     // let x = (player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
 }
 
-function hit (player, star) {
-    star.disableBody(true, true);
+function hit (player, covid) {
+    covid.disableBody(true, true);
     life -= 1;
     lifeText.setText('Life: ' + life);
-    star.enableBody(true, randomInt(12, 800), randomInt(-100, -1000), true, true);
+    covid.enableBody(true, randomInt(12, 800), randomInt(-100, -1000), true, true);
 
-    if (life === -1) {
-        gameover(player)
-    }
+    // if (life === -1) {
+    //     gameover(player)
+    // }
 
 }
 
