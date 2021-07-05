@@ -92,11 +92,11 @@ function update () {
     cursors = this.input.keyboard.createCursorKeys();
 
     if (cursors.left.isDown) {
-        player.setVelocityX(-200);
+        player.setVelocityX(-300);
         player.anims.play('left', true);
 
     } else if (cursors.right.isDown) {
-        player.setVelocityX(200);
+        player.setVelocityX(300);
         player.anims.play('right', true);
 
     } else {
