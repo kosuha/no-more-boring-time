@@ -1,7 +1,7 @@
 const config = {
     type: Phaser.AUTO,
-    width: 800,
-    height: 600,
+    width: 400,
+    height: 700,
     physics: {
         default: 'arcade',
         arcade: {
@@ -20,9 +20,9 @@ const game = new Phaser.Game(config);
 
 let life = 3;
 let lifeText;
+let startTime;
 
 function preload () {
-    console.log("a")
     this.load.image('background', 'images/background.png');
     this.load.image('ground', 'images/platform.png');
     this.load.image('covid', 'images/covid.png');
@@ -33,19 +33,19 @@ function preload () {
 }
 
 function create () {
-    this.add.image(400, 300, 'background');
+    this.add.image(400, 300, 'background').setScale(2);
     
     platforms = this.physics.add.staticGroup();
-    starEnd = this.physics.add.staticGroup();
+    covidEnd = this.physics.add.staticGroup();
 
-    platforms.create(400, 600, 'ground').setScale(2).refreshBody();
-    starEnd.create(400, 800, 'ground').setScale(4).refreshBody();
+    platforms.create(config.width / 2, config.height, 'ground').setScale(2).refreshBody();
+    covidEnd.create(config.width / 2, config.height + 200, 'ground').setScale(4).refreshBody();
 
     // platforms.create(600, 400, 'ground');
     // platforms.create(50, 250, 'ground');
     // platforms.create(750, 220, 'ground');
 
-    player = this.physics.add.sprite(100, 450, 'dude');
+    player = this.physics.add.sprite(config.width / 2, config.height / 2, 'dude');
 
     // player.setBounce(0.2);
     player.setCollideWorldBounds(true);
@@ -80,15 +80,25 @@ function create () {
         setXY: { x: -100, y: randomInt(-100, -2000) }
     })
 
-    this.physics.add.overlap(starEnd, covids, collectStar, null, this);
+    this.physics.add.overlap(covidEnd, covids, refall, null, this);
 
     this.physics.add.overlap(player, covids, hit, null, this);
 
-    lifeText = this.add.text(16, 16, 'Life: 3', { fontSize: '32px', fill: '#000' });
+    lifeText = this.add.text(16, 16, 'Life: 3', { fontSize: '16px', fill: '#000' });
+    scoreText = this.add.text(16, 16 + 18, 'Score: 0', { fontSize: '16px', fill: '#000' });
+
+    startTime = new Date().getTime();
 
 }
 
 function update () {
+    let nowTime = new Date().getTime()
+    let playTime = nowTime - startTime
+
+    let score = Math.floor((playTime / 1000) * 5)
+
+    scoreText.setText('Score: ' + score);
+    
     cursors = this.input.keyboard.createCursorKeys();
 
     if (cursors.left.isDown) {
@@ -106,9 +116,9 @@ function update () {
 
 }
 
-function collectStar (player, covid){
+function refall (player, covid){
     covid.disableBody(true, true);
-    covid.enableBody(true, randomInt(12, 800), randomInt(-100, -1000), true, true);
+    covid.enableBody(true, randomInt(12, 800), randomInt(-100, -2000), true, true);
     // let x = (player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
 }
 
@@ -116,7 +126,7 @@ function hit (player, covid) {
     covid.disableBody(true, true);
     life -= 1;
     lifeText.setText('Life: ' + life);
-    covid.enableBody(true, randomInt(12, 800), randomInt(-100, -1000), true, true);
+    covid.enableBody(true, randomInt(12, 800), randomInt(-100, -2000), true, true);
 
     // if (life === -1) {
     //     gameover(player)
