@@ -27,6 +27,7 @@ function preload () {
     this.load.image('ground', 'images/platform.png');
     this.load.image('covid', 'images/covid.png');
     this.load.image('bomb', 'images/bomb.png');
+    this.load.image('mask', 'images/mask.png');
     this.load.spritesheet('dude', 'images/dude.png',
         {frameWidth : 33.3, frameHeight : 39}
     );
@@ -76,13 +77,23 @@ function create () {
     // this.physics.add.sprite(randomInt(12, 800), randomInt(-100, -300), 'star');
     covids = this.physics.add.group({
         key: 'covid',
-        repeat: 20,
+        repeat: 10,
         setXY: { x: -100, y: randomInt(-100, -2000) }
     })
 
     this.physics.add.overlap(covidEnd, covids, refall, null, this);
-
     this.physics.add.overlap(player, covids, hit, null, this);
+    
+    masks = this.physics.add.group({
+        key: 'mask',
+        repeat: 0,
+        setXY: { x: -100, y: randomInt(-100, -2000) }
+    })
+
+    
+
+    this.physics.add.overlap(covidEnd, masks, refall, null, this);
+    this.physics.add.overlap(player, masks, getMask, null, this);
 
     lifeText = this.add.text(16, 16, 'Life: 3', { fontSize: '16px', fill: '#000' });
     scoreText = this.add.text(16, 16 + 18, 'Score: 0', { fontSize: '16px', fill: '#000' });
@@ -118,8 +129,8 @@ function update () {
 
 function refall (player, covid){
     covid.disableBody(true, true);
-    covid.enableBody(true, randomInt(12, 800), randomInt(-100, -2000), true, true);
-    // let x = (player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
+    covid.enableBody(true, randomInt(12, config.width - 12), randomInt(-100, -2000), true, true);
+
 }
 
 function hit (player, covid) {
@@ -132,6 +143,13 @@ function hit (player, covid) {
     //     gameover(player)
     // }
 
+}
+
+function getMask (player, mask) {
+    mask.disableBody(true, true);
+    life += 1;
+    lifeText.setText('Life: ' + life);
+    mask.enableBody(true, randomInt(12, 800), randomInt(-100, -2000), true, true);
 }
 
 function gameover (player) {
