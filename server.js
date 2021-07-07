@@ -11,7 +11,7 @@ app.get('/', (request, response) => {
 });
 
 app.get('/covid-19', (request, response) => {
-    response.sendFile(__dirname + '/covid-19.html');
+    response.sendFile(__dirname + 'covid-19/index.html');
 });
 
 app.listen(80, () => {

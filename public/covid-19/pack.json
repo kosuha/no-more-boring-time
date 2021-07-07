@@ -1,0 +1,28 @@
+{
+    "image": {
+        "path": "images",
+        "defaultType": "image",
+        "files": [
+            {
+                "key": "background",
+                "url": "background.png"
+            },
+            {
+                "key": "covid",
+                "url": "covid.png"
+            },
+            {
+                "key": "dude",
+                "url": "dude.png"
+            },
+            {
+                "key": "mask",
+                "url": "mask.png"
+            },
+            {
+                "key": "platform",
+                "url": "platform.png"
+            }
+        ]
+    }
+}
