@@ -1,8 +1,7 @@
 class IntroScene extends Phaser.Scene {
     constructor () {
         super({
-            key: 'IntroScene',
-            active: true
+            key: 'IntroScene'
         })
     }
 
@@ -31,19 +30,18 @@ class ProgressScene extends Phaser.Scene {
         this.load.pack('pack','pack.json');
     }
 
-    // create(){
-    //     // this.sleep(3000)
-    //     // this.scene.start('GameScene');
-    //     // this.scene.start('UIScene');
-    //     // this.release();
-    // }
+    create(){
+        // this.sleep(3000)
+        this.scene.start('GameScene');
+        // this.scene.start('UIScene');
+        this.release();
+    }
 
-    // release(){
-    //     this.graphics.destroy();
-    //     this.scene.get('IntroScene').loading_mask.destroy();
-    //     this.textures.remove('mask');
-    //     this.scene.destroy('IntroScene');
-    // }
+    release(){
+        this.scene.get('IntroScene').loading_mask.destroy();
+        this.textures.remove('mask');
+        this.scene.destroy('IntroScene');
+    }
 
     // sleep(ms) {
     //     const wakeUpTime = Date.now() + ms;

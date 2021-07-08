@@ -1,0 +1,74 @@
+{
+    "anims": [
+        {
+            "key": "dude_left",
+            "type": "frame",
+            "frames": [
+                {
+                    "key": "dude",
+                    "frame": "0"
+                },
+                {
+                    "key": "dude",
+                    "frame": "1"
+                }
+            ],
+            "frameRate": 5,
+            "duration": 1,
+            "skipMissedFrames": false,
+            "delay": 0,
+            "repeat": -1,
+            "repeatDelay": 0,
+            "yoyo": false,
+            "showOnStart": false,
+            "hideOnComplete": false
+        },
+        {
+            "key": "dude_straight",
+            "type": "frame",
+            "frames": [
+                {
+                    "key": "dude",
+                    "frame": "2"
+                },
+                {
+                    "key": "dude",
+                    "frame": "3"
+                }
+            ],
+            "frameRate": 5,
+            "duration": 1,
+            "skipMissedFrames": false,
+            "delay": 0,
+            "repeat": -1,
+            "repeatDelay": 0,
+            "yoyo": false,
+            "showOnStart": false,
+            "hideOnComplete": false
+        },
+        {
+            "key": "dude_right",
+            "type": "frame",
+            "frames": [
+                {
+                    "key": "dude",
+                    "frame": "4"
+                },
+                {
+                    "key": "dude",
+                    "frame": "5"
+                }
+            ],
+            "frameRate": 5,
+            "duration": 1,
+            "skipMissedFrames": false,
+            "delay": 0,
+            "repeat": -1,
+            "repeatDelay": 0,
+            "yoyo": false,
+            "showOnStart": false,
+            "hideOnComplete": false
+        }
+    ],
+    "globalTimeScale": 1
+}

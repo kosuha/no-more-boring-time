@@ -12,16 +12,33 @@
                 "url": "covid.png"
             },
             {
-                "key": "dude",
-                "url": "dude.png"
-            },
-            {
                 "key": "mask",
                 "url": "mask.png"
             },
             {
                 "key": "platform",
                 "url": "platform.png"
+            }
+        ]
+    },
+    "anims": {
+        "path": "images",
+        "defaultType": "json",
+        "files": [
+            {
+                "key": "dude",
+                "url": "dude/anims.json"
+            }
+        ]
+    },
+    "atlas": {
+        "path": "images",
+        "defaultType": "atlas",
+        "files": [
+            {
+                "key": "dude",
+                "atlasURL": "dude/sprites.json",
+                "textureURL": "dude/sprites.png"
             }
         ]
     }

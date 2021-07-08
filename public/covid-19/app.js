@@ -1,7 +1,7 @@
 const CONFIG = {
     type: Phaser.AUTO,
     backgroundColor: '#000000',
-    scene: [IntroScene, ProgressScene],
+    scene: [IntroScene, ProgressScene, GameScene],
     scale: {
         mode: Phaser.Scale.FIT,
         width: 400,
