@@ -8,6 +8,8 @@ class GameScene extends Phaser.Scene {
         this.life = 3;
         this.lifeText;
         this.startTime;
+        this.over = false;
+        this.score = 0;
     }
 
     preload() {
@@ -109,12 +111,14 @@ class GameScene extends Phaser.Scene {
     }
 
     update() {
-        let nowTime = new Date().getTime();
-        let playTime = nowTime - this.startTime;
-
-        let score = Math.floor((playTime / 1000) * 5);
-
-        this.scoreText.setText("Score: " + score);
+        if(this.over === false) {
+            let nowTime = new Date().getTime();
+            let playTime = nowTime - this.startTime;
+    
+            this.score = Math.floor((playTime / 1000) * 5);
+        }
+        
+        this.scoreText.setText("Score: " + this.score);
 
         let cursors = this.input.keyboard.createCursorKeys();
 
@@ -142,9 +146,12 @@ class GameScene extends Phaser.Scene {
     }
 
     hit(player, covid) {
-        covid.disableBody(true, true);
         this.life -= 1;
+        if(this.life <= -1) {
+            this.gameover(player)
+        }
         this.lifeText.setText("Life: " + this.life);
+        covid.disableBody(true, true);
         covid.enableBody(
             true,
             this.randomInt(12, 800),
@@ -170,8 +177,7 @@ class GameScene extends Phaser.Scene {
     gameover(player) {
         this.physics.pause();
         player.setTint(0xff0000);
-        player.anims.play("turn");
-        gameOver = true;
+        this.over = true
     }
 
     randomInt(min, max) {
