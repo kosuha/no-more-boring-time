@@ -178,6 +178,7 @@ class GameScene extends Phaser.Scene {
         this.physics.pause();
         player.setTint(0xff0000);
         this.over = true
+        var gameScene = this.scene.get('GameOverScene');
     }
 
     randomInt(min, max) {

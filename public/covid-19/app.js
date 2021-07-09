@@ -1,6 +1,6 @@
 const CONFIG = {
     type: Phaser.AUTO,
-    scene: [GameScene],
+    scene: [GameScene, GameOverScene],
     mode: Phaser.Scale.FIT,
     width: 400,
     height: 700,
@@ -9,7 +9,7 @@ const CONFIG = {
         default: "arcade",
         arcade: {
             gravity: { y: 200 },
-            debug: true,
+            debug: false,
         },
     },
     pixelArt: false,
