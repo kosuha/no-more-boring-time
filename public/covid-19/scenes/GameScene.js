@@ -2,7 +2,7 @@ class GameScene extends Phaser.Scene {
     constructor() {
         super({
             key: "GameScene",
-            active: true
+            active: true,
         });
 
         this.life = 3;
@@ -10,6 +10,28 @@ class GameScene extends Phaser.Scene {
         this.startTime;
         this.over = false;
         this.score = 0;
+
+        this.emitter_red = null;
+        this.move = false;
+        this.countText = null;
+        this.angleConfig = {
+            min: 0,
+            max: 360,
+        };
+        this.speedConfig = {
+            min: 0,
+            max: 200,
+        };
+        this.scaleConfig = {
+            start: 0.5,
+            end: 0,
+            ease: "Linear",
+        };
+        this.alphaConfig = {
+            start: 1,
+            end: 0,
+            ease: "Linear",
+        };
     }
 
     preload() {
@@ -19,8 +41,10 @@ class GameScene extends Phaser.Scene {
         this.load.image("mask", "images/mask.png");
         this.load.spritesheet("dude", "images/dude.png", {
             frameWidth: 33.3,
-            frameHeight: 39
+            frameHeight: 39,
         });
+        this.load.image("spark_red", "particles/red.png");
+        this.load.image("spark_blue", "particles/blue.png");
     }
 
     create() {
@@ -85,8 +109,20 @@ class GameScene extends Phaser.Scene {
             setXY: { x: -100, y: this.randomInt(-100, -2000) },
         });
 
-        this.physics.add.overlap(this.covidEnd, this.covids, this.refall, null, this);
-        this.physics.add.overlap(this.player, this.covids, this.hit, null, this);
+        this.physics.add.overlap(
+            this.covidEnd,
+            this.covids,
+            this.refall,
+            null,
+            this
+        );
+        this.physics.add.overlap(
+            this.player,
+            this.covids,
+            this.hit,
+            null,
+            this
+        );
 
         this.masks = this.physics.add.group({
             key: "mask",
@@ -94,8 +130,20 @@ class GameScene extends Phaser.Scene {
             setXY: { x: -100, y: this.randomInt(-100, -2000) },
         });
 
-        this.physics.add.overlap(this.covidEnd, this.masks, this.refall, null, this);
-        this.physics.add.overlap(this.player, this.masks, this.getMask, null, this);
+        this.physics.add.overlap(
+            this.covidEnd,
+            this.masks,
+            this.refall,
+            null,
+            this
+        );
+        this.physics.add.overlap(
+            this.player,
+            this.masks,
+            this.getMask,
+            null,
+            this
+        );
 
         this.lifeText = this.add.text(16, 16, "Life: 3", {
             fontSize: "16px",
@@ -108,16 +156,46 @@ class GameScene extends Phaser.Scene {
         });
 
         this.startTime = new Date().getTime();
+
+        this.emitter_red = this.add.particles("spark_red").createEmitter({
+            name: "spark_red",
+            x: this.player.x,
+            y: this.player.y,
+            gravityY: 3000,
+            speed: this.speedConfig,
+            angle: this.angleConfig,
+            scale: this.scaleConfig,
+            alpha: this.alphaConfig,
+            blendMode: "SCREEN",
+            lifespan: 200
+        });
+
+        this.emitter_red.setVisible(false);
+
+        this.emitter_blue = this.add.particles("spark_blue").createEmitter({
+            name: "spark_blue",
+            x: this.player.x,
+            y: this.player.y,
+            gravityY: 3000,
+            speed: this.speedConfig,
+            angle: this.angleConfig,
+            scale: this.scaleConfig,
+            alpha: this.alphaConfig,
+            blendMode: "SCREEN",
+            lifespan: 200
+        });
+
+        this.emitter_blue.setVisible(false);
     }
 
     update() {
-        if(this.over === false) {
+        if (this.over === false) {
             let nowTime = new Date().getTime();
             let playTime = nowTime - this.startTime;
-    
+
             this.score = Math.floor((playTime / 1000) * 5);
         }
-        
+
         this.scoreText.setText("Score: " + this.score);
 
         let cursors = this.input.keyboard.createCursorKeys();
@@ -132,6 +210,9 @@ class GameScene extends Phaser.Scene {
             this.player.setVelocityX(0);
             this.player.anims.play("turn", true);
         }
+
+        this.emitter_red.setPosition(this.player.x, this.player.y)
+        this.emitter_blue.setPosition(this.player.x, this.player.y)
     }
 
     refall(player, covid) {
@@ -146,9 +227,10 @@ class GameScene extends Phaser.Scene {
     }
 
     hit(player, covid) {
+        this.red_effect(player)
         this.life -= 1;
-        if(this.life <= -1) {
-            this.gameover(player)
+        if (this.life <= -1) {
+            this.gameover(player);
         }
         this.lifeText.setText("Life: " + this.life);
         covid.disableBody(true, true);
@@ -162,9 +244,10 @@ class GameScene extends Phaser.Scene {
     }
 
     getMask(player, mask) {
-        mask.disableBody(true, true);
+        this.blue_effect(player)
         this.life += 1;
         this.lifeText.setText("Life: " + this.life);
+        mask.disableBody(true, true);
         mask.enableBody(
             true,
             this.randomInt(12, 800),
@@ -177,11 +260,25 @@ class GameScene extends Phaser.Scene {
     gameover(player) {
         this.physics.pause();
         player.setTint(0xff0000);
-        this.over = true
-        var gameScene = this.scene.get('GameOverScene');
+        this.over = true;
+        var gameScene = this.scene.get("GameOverScene");
     }
 
     randomInt(min, max) {
         return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    red_effect(player) {
+        this.emitter_red.setVisible(true);
+        setTimeout(() => {
+            this.emitter_red.setVisible(false);
+        }, 200);
+    }
+
+    blue_effect(player) {
+        this.emitter_blue.setVisible(true);
+        setTimeout(() => {
+            this.emitter_blue.setVisible(false);
+        }, 200);
     }
 }
