@@ -109,6 +109,12 @@ class GameScene extends Phaser.Scene {
             setXY: { x: -100, y: this.randomInt(-100, -2000) },
         });
 
+        this.covidsElite = this.physics.add.group({
+            key: "covid",
+            repeat: 2,
+            setXY: { x: -100, y: this.randomInt(-100, -2000) },
+        });
+
         this.physics.add.overlap(
             this.covidEnd,
             this.covids,
@@ -116,6 +122,7 @@ class GameScene extends Phaser.Scene {
             null,
             this
         );
+
         this.physics.add.overlap(
             this.player,
             this.covids,
@@ -123,6 +130,24 @@ class GameScene extends Phaser.Scene {
             null,
             this
         );
+
+        this.physics.add.overlap(
+            this.covidEnd,
+            this.covidsElite,
+            this.refallElite,
+            null,
+            this
+        );
+        
+        this.physics.add.overlap(
+            this.player,
+            this.covidsElite,
+            this.hitElite,
+            null,
+            this
+        );
+
+        // this.covidsElite.setTint(0x0000ff);
 
         this.masks = this.physics.add.group({
             key: "mask",
@@ -137,6 +162,7 @@ class GameScene extends Phaser.Scene {
             null,
             this
         );
+        
         this.physics.add.overlap(
             this.player,
             this.masks,
@@ -226,6 +252,17 @@ class GameScene extends Phaser.Scene {
         );
     }
 
+    refallElite(player, covid) {
+        covid.disableBody(true, true);
+        covid.enableBody(
+            true,
+            this.player.x,
+            -2500,
+            true,
+            true
+        );
+    }
+
     hit(player, covid) {
         this.red_effect(player)
         this.life -= 1;
@@ -238,6 +275,23 @@ class GameScene extends Phaser.Scene {
             true,
             this.randomInt(12, 800),
             this.randomInt(-100, -2000),
+            true,
+            true
+        );
+    }
+
+    hitElite(player, covid) {
+        this.red_effect(player)
+        this.life -= 1;
+        if (this.life <= -1) {
+            this.gameover(player);
+        }
+        this.lifeText.setText("Life: " + this.life);
+        covid.disableBody(true, true);
+        covid.enableBody(
+            true,
+            this.player.x,
+            -2500,
             true,
             true
         );
