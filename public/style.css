@@ -1,0 +1,8 @@
+.gameList {
+    display: flex;
+    flex-direction: column;
+}
+
+.gameList>a {
+    padding: 5px;
+}
