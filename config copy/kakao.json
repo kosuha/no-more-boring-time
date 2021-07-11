@@ -1,0 +1,7 @@
+{
+    "web": {
+        "client_id": "",
+        "client_secret": "",
+        "callback_URL": "http://ec2-3-35-14-224.ap-northeast-2.compute.amazonaws.com/auth/kakao/callback"
+    }
+}
