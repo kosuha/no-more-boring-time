@@ -1,14 +1,25 @@
+var width = 0;
+var height = 0;
+
+if((window.innerWidth / window.innerHeight) > (400 / 700)) {
+    width = window.innerHeight * 400 / 700;
+    height = window.innerHeight;
+} else {
+    width = window.innerWidth;
+    height = window.innerWidth * 700 / 400;
+}
+
 const CONFIG = {
     type: Phaser.AUTO,
     scene: [GameScene, GameOverScene],
-    mode: Phaser.Scale.FIT,
-    width: 400,
-    height: 700,
+    mode: Phaser.Scale.RESIZE,
+    width: width,
+    height: height,
     // autoCenter: Phaser.Scale.CENTER_BOTH,
     physics: {
         default: "arcade",
         arcade: {
-            gravity: { y: 200 },
+            gravity: { y: height * 2 / 7 },
             debug: false,
         },
     },

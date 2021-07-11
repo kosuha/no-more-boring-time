@@ -10,6 +10,10 @@ class GameScene extends Phaser.Scene {
         this.startTime;
         this.over = false;
         this.score = 0;
+        this.playerSpeed;
+
+        // TODO
+        // 크기를 가로세로 비율에 맞추기
 
         this.angleConfig = {
             min: 0,
@@ -45,24 +49,24 @@ class GameScene extends Phaser.Scene {
     }
 
     create() {
-        this.add.image(400, 300, "background").setScale(2);
+        this.add.image(WIDTH / 2, HEIGHT / 2, "background").setScale(2);
 
         this.platforms = this.physics.add.staticGroup();
         this.covidEnd = this.physics.add.staticGroup();
 
         this.platforms
-            .create(CONFIG.width / 2, CONFIG.height, "ground")
+            .create(WIDTH / 2, HEIGHT, "ground")
             .setScale(2)
             .refreshBody();
 
         this.covidEnd
-            .create(CONFIG.width / 2, CONFIG.height + 200, "ground")
+            .create(WIDTH / 2, HEIGHT + (HEIGHT * 2 / 7), "ground")
             .setScale(4)
             .refreshBody();
 
         this.player = this.physics.add.sprite(
-            CONFIG.width / 2,
-            CONFIG.height / 2,
+            WIDTH / 2,
+            HEIGHT / 2,
             "dude"
         );
 
@@ -103,7 +107,7 @@ class GameScene extends Phaser.Scene {
         this.covids = this.physics.add.group({
             key: "covid",
             repeat: 10,
-            setXY: { x: -100, y: this.randomInt(-100, -2000) },
+            setXY: { x: -(WIDTH * 1 / 4), y: this.randomInt(-(HEIGHT * 1 / 7), -(HEIGHT * 20 / 7)) },
         });
 
         this.covidsElite = this.physics.add.group({
