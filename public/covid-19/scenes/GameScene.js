@@ -10,7 +10,7 @@ class GameScene extends Phaser.Scene {
         this.startTime;
         this.over = false;
         this.score = 0;
-        this.playerSpeed;
+        this.playerSpeed = HEIGHT * 300 / 700;
 
         // TODO
         // 크기를 가로세로 비율에 맞추기
@@ -24,7 +24,7 @@ class GameScene extends Phaser.Scene {
             max: 200,
         };
         this.scaleConfig = {
-            start: 0.5,
+            start: WIDTH * 1 / 800,
             end: 0,
             ease: "Linear",
         };
@@ -41,7 +41,7 @@ class GameScene extends Phaser.Scene {
         this.load.image("covid", "images/covid.png");
         this.load.image("mask", "images/mask.png");
         this.load.spritesheet("dude", "images/dude.png", {
-            frameWidth: 33.3,
+            frameWidth: 33.332,
             frameHeight: 39,
         });
         this.load.image("spark_red", "particles/red.png");
@@ -49,26 +49,26 @@ class GameScene extends Phaser.Scene {
     }
 
     create() {
-        this.add.image(WIDTH / 2, HEIGHT / 2, "background").setScale(2);
+        this.add.image(WIDTH / 2, HEIGHT / 2, "background").setScale(WIDTH * 2 / 400);
 
         this.platforms = this.physics.add.staticGroup();
         this.covidEnd = this.physics.add.staticGroup();
 
         this.platforms
             .create(WIDTH / 2, HEIGHT, "ground")
-            .setScale(2)
+            .setScale(WIDTH * 2 / 400)
             .refreshBody();
 
         this.covidEnd
             .create(WIDTH / 2, HEIGHT + (HEIGHT * 2 / 7), "ground")
-            .setScale(4)
+            .setScale(WIDTH * 4 / 400)
             .refreshBody();
 
         this.player = this.physics.add.sprite(
             WIDTH / 2,
             HEIGHT / 2,
             "dude"
-        );
+        ).setScale(WIDTH * 1 / 400);
 
         this.player.setCollideWorldBounds(true);
 
@@ -108,12 +108,16 @@ class GameScene extends Phaser.Scene {
             key: "covid",
             repeat: 10,
             setXY: { x: -(WIDTH * 1 / 4), y: this.randomInt(-(HEIGHT * 1 / 7), -(HEIGHT * 20 / 7)) },
+            setScale: { x: WIDTH * 1 / 400, y: WIDTH * 1 / 400 }
         });
+
+        console.log(this.physics.add.group)
 
         this.covidsElite = this.physics.add.group({
             key: "covid",
             repeat: 2,
-            setXY: { x: -100, y: this.randomInt(-100, -2000) },
+            setXY: { x: -(WIDTH * 1 / 4), y: this.randomInt(-(HEIGHT * 1 / 7), -(HEIGHT * 20 / 7)) },
+            setScale: { x: WIDTH * 1 / 400, y: WIDTH * 1 / 400 }
         });
 
         this.physics.add.overlap(
@@ -153,7 +157,8 @@ class GameScene extends Phaser.Scene {
         this.masks = this.physics.add.group({
             key: "mask",
             repeat: 0,
-            setXY: { x: -100, y: this.randomInt(-100, -2000) },
+            setXY: { x: -(WIDTH * 1 / 4), y: this.randomInt(-(HEIGHT * 1 / 7), -(HEIGHT * 20 / 7)) },
+            setScale: { x: WIDTH * 1 / 400, y: WIDTH * 1 / 400 }
         });
 
         this.physics.add.overlap(
@@ -172,13 +177,13 @@ class GameScene extends Phaser.Scene {
             this
         );
 
-        this.lifeText = this.add.text(16, 16, "Life: 3", {
-            fontSize: "16px",
+        this.lifeText = this.add.text(WIDTH*16/400, WIDTH*16/400, "Life: 3", {
+            fontSize: WIDTH * 16 / 400 + "px",
             fill: "#000",
         });
 
-        this.scoreText = this.add.text(16, 16 + 18, "Score: 0", {
-            fontSize: "16px",
+        this.scoreText = this.add.text(WIDTH*16/400, WIDTH*35/400, "Score: 0", {
+            fontSize: WIDTH * 16 / 400 + "px",
             fill: "#000",
         });
 
@@ -229,10 +234,10 @@ class GameScene extends Phaser.Scene {
         var pointer = this.input.activePointer;
 
         if (cursors.left.isDown || (pointer.isDown && pointer.x < WIDTH / 2)) {
-            this.player.setVelocityX(-300);
+            this.player.setVelocityX(-(this.playerSpeed));
             this.player.anims.play("left", true);
         } else if (cursors.right.isDown || (pointer.isDown && pointer.x > WIDTH / 2)) {
-            this.player.setVelocityX(300);
+            this.player.setVelocityX(this.playerSpeed);
             this.player.anims.play("right", true);
         } else {
             this.player.setVelocityX(0);
@@ -247,8 +252,8 @@ class GameScene extends Phaser.Scene {
         covid.disableBody(true, true);
         covid.enableBody(
             true,
-            this.randomInt(12, CONFIG.width - 12),
-            this.randomInt(-100, -2000),
+            this.randomInt(covid.width / 2, WIDTH - (covid.width / 2)),
+            this.randomInt(-(HEIGHT * 100 / 700), -(HEIGHT * 2000 / 700)),
             true,
             true
         );
@@ -256,7 +261,7 @@ class GameScene extends Phaser.Scene {
 
     refallElite(player, covid) {
         covid.disableBody(true, true);
-        covid.enableBody(true, this.player.x, -2500, true, true);
+        covid.enableBody(true, this.player.x, -(HEIGHT * 4), true, true);
     }
 
     hit(player, covid) {
@@ -269,8 +274,8 @@ class GameScene extends Phaser.Scene {
         covid.disableBody(true, true);
         covid.enableBody(
             true,
-            this.randomInt(12, 800),
-            this.randomInt(-100, -2000),
+            this.randomInt(covid.width / 2, WIDTH - (covid.width / 2)),
+            this.randomInt(-(HEIGHT * 100 / 700), -(HEIGHT * 2000 / 700)),
             true,
             true
         );
@@ -284,7 +289,7 @@ class GameScene extends Phaser.Scene {
         }
         this.lifeText.setText("Life: " + this.life);
         covid.disableBody(true, true);
-        covid.enableBody(true, this.player.x, -2500, true, true);
+        covid.enableBody(true, this.player.x, -(HEIGHT * 4), true, true);
     }
 
     getMask(player, mask) {
@@ -294,8 +299,8 @@ class GameScene extends Phaser.Scene {
         mask.disableBody(true, true);
         mask.enableBody(
             true,
-            this.randomInt(12, 800),
-            this.randomInt(-100, -2000),
+            this.randomInt(mask.width / 2, WIDTH - (mask.width / 2)),
+            this.randomInt(-(HEIGHT * 100 / 700), -(HEIGHT * 2000 / 700)),
             true,
             true
         );
