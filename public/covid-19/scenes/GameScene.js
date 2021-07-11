@@ -11,9 +11,6 @@ class GameScene extends Phaser.Scene {
         this.over = false;
         this.score = 0;
 
-        this.emitter_red = null;
-        this.move = false;
-        this.countText = null;
         this.angleConfig = {
             min: 0,
             max: 360,
@@ -138,7 +135,7 @@ class GameScene extends Phaser.Scene {
             null,
             this
         );
-        
+
         this.physics.add.overlap(
             this.player,
             this.covidsElite,
@@ -162,7 +159,7 @@ class GameScene extends Phaser.Scene {
             null,
             this
         );
-        
+
         this.physics.add.overlap(
             this.player,
             this.masks,
@@ -193,7 +190,7 @@ class GameScene extends Phaser.Scene {
             scale: this.scaleConfig,
             alpha: this.alphaConfig,
             blendMode: "SCREEN",
-            lifespan: 200
+            lifespan: 200,
         });
 
         this.emitter_red.setVisible(false);
@@ -208,7 +205,7 @@ class GameScene extends Phaser.Scene {
             scale: this.scaleConfig,
             alpha: this.alphaConfig,
             blendMode: "SCREEN",
-            lifespan: 200
+            lifespan: 200,
         });
 
         this.emitter_blue.setVisible(false);
@@ -225,11 +222,12 @@ class GameScene extends Phaser.Scene {
         this.scoreText.setText("Score: " + this.score);
 
         let cursors = this.input.keyboard.createCursorKeys();
+        var pointer = this.input.activePointer;
 
-        if (cursors.left.isDown) {
+        if (cursors.left.isDown || (pointer.isDown && pointer.x < WIDTH / 2)) {
             this.player.setVelocityX(-300);
             this.player.anims.play("left", true);
-        } else if (cursors.right.isDown) {
+        } else if (cursors.right.isDown || (pointer.isDown && pointer.x > WIDTH / 2)) {
             this.player.setVelocityX(300);
             this.player.anims.play("right", true);
         } else {
@@ -237,8 +235,8 @@ class GameScene extends Phaser.Scene {
             this.player.anims.play("turn", true);
         }
 
-        this.emitter_red.setPosition(this.player.x, this.player.y)
-        this.emitter_blue.setPosition(this.player.x, this.player.y)
+        this.emitter_red.setPosition(this.player.x, this.player.y);
+        this.emitter_blue.setPosition(this.player.x, this.player.y);
     }
 
     refall(player, covid) {
@@ -254,17 +252,11 @@ class GameScene extends Phaser.Scene {
 
     refallElite(player, covid) {
         covid.disableBody(true, true);
-        covid.enableBody(
-            true,
-            this.player.x,
-            -2500,
-            true,
-            true
-        );
+        covid.enableBody(true, this.player.x, -2500, true, true);
     }
 
     hit(player, covid) {
-        this.red_effect(player)
+        this.red_effect(player);
         this.life -= 1;
         if (this.life <= -1) {
             this.gameover(player);
@@ -281,24 +273,18 @@ class GameScene extends Phaser.Scene {
     }
 
     hitElite(player, covid) {
-        this.red_effect(player)
+        this.red_effect(player);
         this.life -= 1;
         if (this.life <= -1) {
             this.gameover(player);
         }
         this.lifeText.setText("Life: " + this.life);
         covid.disableBody(true, true);
-        covid.enableBody(
-            true,
-            this.player.x,
-            -2500,
-            true,
-            true
-        );
+        covid.enableBody(true, this.player.x, -2500, true, true);
     }
 
     getMask(player, mask) {
-        this.blue_effect(player)
+        this.blue_effect(player);
         this.life += 1;
         this.lifeText.setText("Life: " + this.life);
         mask.disableBody(true, true);

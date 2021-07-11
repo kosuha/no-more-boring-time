@@ -1,0 +1,369 @@
+* {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 2vh;
+    font-weight: 700;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+#popUp {
+    position: absolute;
+    width: 45vh;
+    left: 35%;
+    top: 35%;
+    background-color: aliceblue;
+    padding: 4vh;
+    box-shadow: 5px 5px 5px;
+}
+
+#popUp input {
+    width: 35vh;
+    height: 3vh;
+    margin: 1vh;
+}
+
+#popUpButtons {
+    display: inline-flex;
+    flex-direction: row;
+    justify-content: flex-end;
+}
+
+#popUp button {
+    width: 10vh;
+    height: 3.5vh;
+    font-size: 1vh;
+    margin: 1vh;
+}
+
+#ranking {
+    margin-right: 4vh;
+}
+
+#rankingTitle {
+    margin-bottom: 4vh;
+    padding: 1vh;
+    text-align: center;
+}
+
+#rankingTable td {
+    padding: 1.5vh;
+}
+
+body {
+    width: 100vw;
+    height: 100vh;
+}
+
+#all {
+    width: 100%;
+    height: 100%;
+    display: inline-flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+#game {
+    border: 2px solid rgba(0, 0, 0, 1);
+    position: relative;
+    z-index: -1;
+}
+
+#gameOverContainer {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    background-color: rgba(100, 100, 100, 0.5);
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+#gameOver {
+    width: 100%;
+    font-size: 5vh;
+    top: 0;
+    left: 0;
+    text-align: center;
+}
+
+#side {
+    height: 80vh;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+#info {
+    height: 70vh;
+    margin-left: 2vh;
+}
+
+#buttons {
+    height: 10vh;
+    margin-left: 2vh;
+}
+
+button {
+    border-radius: 3rem;
+    width: 20vh;
+    height: 6vh;
+    margin-top: 0.5vh;
+}
+
+#info div {
+    margin: 10px;
+}
+
+#helpButton {
+    position: fixed;
+    top: 0px;
+    right: 0px;
+    border-radius: 5rem;
+    margin: 2vh;
+    width: 6vh;
+    height:6vh;
+}
+
+#help {
+    line-height: 150%;
+    position: fixed;
+    top: 0px;
+    right: 0px;
+    padding: 1vh;
+    margin: 1vh;
+    border: 2px solid black;
+    background-color: rgba(255, 255, 255, 0.8);
+    display: none;
+}
+
+#tetris {
+    border-collapse: collapse;
+    background-color: white;
+}
+
+#nextTitle {
+    padding-top: 2vh;
+}
+
+#next {
+    margin-left: 1vh;
+    border-collapse: collapse;
+}
+
+#tetris td {
+    border: 0.1vh solid rgba(0, 0, 0, 0.1);
+    border-radius: 0.5vh;
+    width: 4vh;
+    height: 4vh;
+}
+
+#next td {
+    border: 0.1vh solid rgba(0, 0, 0, 0.1);
+    border-radius: 0.5vh;
+    width: 4vh;
+    height: 4vh;
+}
+
+#arrows, #drop, #back {
+    display: none;
+}
+
+#myInfo {
+    display: flex;
+    align-items: center;
+}
+
+#myImage {
+    border-radius: 10vh;
+    width: 3rem;
+    height: 3rem;
+    border: 2px solid black;
+}
+
+#rankingProfileImage {
+    border-radius: 10vh;
+    width: 2rem;
+    height: 2rem;
+    border: 1px solid black;
+}
+
+#myName {
+    font-size: 2rem;
+}
+
+#rankingTable {
+    border-collapse: collapse;
+}
+
+#rankingTable>:nth-child(1)>:nth-child(1) {
+    -webkit-text-stroke: 1px rgb(223, 195, 39);
+}
+
+#rankingTable>:nth-child(2)>:nth-child(1) {
+    -webkit-text-stroke: 1px rgb(150, 150, 150);
+}
+
+#rankingTable>:nth-child(3)>:nth-child(1) {
+    -webkit-text-stroke: 1px rgb(189, 116, 56);
+}
+
+@media ( max-width: 900px) {
+    * {
+        font-size: 1vh;
+    }
+
+    #all {
+        width: 100%;
+        height: 100%;
+        display: inline-flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+    #game {
+        margin: 3%;
+    }
+    #side {
+        display: inline-flex;
+        flex-direction: row;
+        align-items: flex-start;
+    }
+    #info {
+        height: auto;
+        margin-left: 0;
+    }
+    #info div {
+        margin: 0.5rem;
+    }
+    
+    #nextTitle {
+        padding-top: 1vh;
+    }
+    #buttons {
+        height: 6rem;
+    }
+    button {
+        border: 2px solid black;
+        width: 13rem;
+        height: 5rem;
+    }
+    
+    #tetris td {
+        width: 3rem;
+        height: 3rem;
+    }
+    #next td {
+        width: 1.5rem;
+        height: 1.5rem;
+    }
+    #arrows, #drop {
+        display: inline;
+    }
+    #arrows {
+        margin-left: 7rem;
+    }
+    #drop {
+        margin-left: 2rem;
+    }
+    #arrowTable td {
+        width: 7rem;
+        height: 7rem;
+    }
+    #up {
+        border: 2px solid black;
+        border-radius: 1rem;
+        border-top-left-radius: 5rem;
+        border-top-right-radius: 5rem;
+    }
+    #down {
+        border: 2px solid black;
+        border-radius: 1rem;
+        border-bottom-left-radius: 5rem;
+        border-bottom-right-radius: 5rem;
+    }
+    #left {
+        border: 2px solid black;
+        border-radius: 1rem;
+        border-bottom-left-radius: 5rem;
+        border-top-left-radius: 5rem;
+    }
+    #right {
+        border: 2px solid black;
+        border-radius: 1rem;
+        border-bottom-right-radius: 5rem;
+        border-top-right-radius: 5rem;
+    }
+    #drop {
+        width: 10rem;
+        height: 10rem;
+        border: 2px solid black;
+        margin-top: 10rem;
+        border-radius: 2rem;
+        padding: 1rem;
+    }
+    #control {
+        display: flex;
+        flex-direction: row;
+        margin-top: 3rem;
+    }
+    #buttonAndControl {
+        display: flex;
+        flex-direction: column;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+    }
+    #popUp {
+        position: absolute;
+        width: 90%;
+        left: 5%;
+        top: 35%;
+        background-color: aliceblue;
+        padding: 4rem;
+        box-shadow: 5px 5px 5px;
+    }
+    #popUp input {
+        width: 90%;
+        height: 5rem;
+        margin: 1rem;
+        font-size: 2rem;
+    }
+    #back {
+        display: inline;
+    }
+    #ranking {
+        display: none;
+        padding: 5rem;
+    }
+
+    #helpButton {
+        position: fixed;
+        top: 0px;
+        right: 0px;
+        border-radius: 5rem;
+        margin: 2vh;
+        width: 4vh;
+        height: 4vh;
+    }
+    
+    #help {
+        line-height: 150%;
+        position: fixed;
+        top: 0px;
+        right: 0px;
+        padding: 1vh;
+        margin: 1vh;
+        border: 2px solid black;
+        background-color: rgba(255, 255, 255, 0.8);
+        display: none;
+    }
+
+    #myImage {
+        border-radius: 10vh;
+        width: 4rem;
+        height: 4rem;
+        border: 1px solid black;
+    }
+}
