@@ -12,9 +12,6 @@ class GameScene extends Phaser.Scene {
         this.score = 0;
         this.playerSpeed = HEIGHT * 300 / 700;
 
-        // TODO
-        // 크기를 가로세로 비율에 맞추기
-
         this.angleConfig = {
             min: 0,
             max: 360,
@@ -111,7 +108,7 @@ class GameScene extends Phaser.Scene {
             setScale: { x: WIDTH * 1 / 400, y: WIDTH * 1 / 400 }
         });
 
-        console.log(this.physics.add.group)
+        this.physics.add.collider(this.covids);
 
         this.covidsElite = this.physics.add.group({
             key: "covid",

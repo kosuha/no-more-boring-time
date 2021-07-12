@@ -15,7 +15,6 @@ const CONFIG = {
     mode: Phaser.Scale.RESIZE,
     width: width,
     height: height,
-    // autoCenter: Phaser.Scale.CENTER_BOTH,
     physics: {
         default: "arcade",
         arcade: {
@@ -30,3 +29,6 @@ const GAME = new Phaser.Game(CONFIG);
 const WIDTH = GAME.config.width;
 const HEIGHT = GAME.config.height;
 const EMITTER = new Phaser.Events.EventEmitter();
+
+// TODO
+// 게임오버 넘어가기
