@@ -38,11 +38,12 @@ class GameScene extends Phaser.Scene {
         this.load.image("covid", "images/covid.png");
         this.load.image("mask", "images/mask.png");
         this.load.spritesheet("dude", "images/dude.png", {
-            frameWidth: 33.332,
+            frameWidth: 33.8,
             frameHeight: 39,
         });
         this.load.image("spark_red", "particles/red.png");
         this.load.image("spark_blue", "particles/blue.png");
+        this.load.image("restart", "images/restart.png");
     }
 
     create() {
@@ -149,8 +150,6 @@ class GameScene extends Phaser.Scene {
             this
         );
 
-        // this.covidsElite.setTint(0x0000ff);
-
         this.masks = this.physics.add.group({
             key: "mask",
             repeat: 0,
@@ -215,6 +214,10 @@ class GameScene extends Phaser.Scene {
         });
 
         this.emitter_blue.setVisible(false);
+
+        this.restart = this.add.image(WIDTH / 2, HEIGHT / 2, "restart").setScale(WIDTH * 1 / 400);
+        this.restart.setVisible(false)
+        // this.restart.setTint(0x00ff00);
     }
 
     update() {
@@ -226,6 +229,7 @@ class GameScene extends Phaser.Scene {
         }
 
         this.scoreText.setText("Score: " + this.score);
+        this.lifeText.setText("Score: " + this.life);
 
         let cursors = this.input.keyboard.createCursorKeys();
         var pointer = this.input.activePointer;
@@ -307,7 +311,21 @@ class GameScene extends Phaser.Scene {
         this.physics.pause();
         player.setTint(0xff0000);
         this.over = true;
-        var gameScene = this.scene.get("GameOverScene");
+
+        this.restart.setVisible(true);
+        this.restart.setInteractive();
+
+        this.restart.on('pointerdown', () => {
+            this.restart.setTint(0x00ff00);
+            this.life = 3;
+            this.score = 0;
+            this.over = false;
+            this.scene.restart();
+        });
+
+        this.restart.on('pointerup', () => {
+            this.restart.setTint(0xffffff);
+        });
     }
 
     randomInt(min, max) {
