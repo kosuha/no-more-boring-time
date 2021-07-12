@@ -229,7 +229,7 @@ class GameScene extends Phaser.Scene {
         }
 
         this.scoreText.setText("Score: " + this.score);
-        this.lifeText.setText("Score: " + this.life);
+        this.lifeText.setText("Life: " + this.life);
 
         let cursors = this.input.keyboard.createCursorKeys();
         var pointer = this.input.activePointer;
