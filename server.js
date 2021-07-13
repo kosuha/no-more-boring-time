@@ -24,7 +24,6 @@ const authenticateUser = (request, response, next) => {
     }
 };
 
-
 app.use(session({
     secret: sessionData.data.secret,
     resave: false,
@@ -152,6 +151,10 @@ app.post('/score-upload-process', (request, response) => {
                 }
             }
         });
+});
+
+app.get('/alien-hunter', authenticateUser, (request, response) => {
+    response.sendFile(__dirname + 'alien-hunter/index.html');
 });
 
 http.listen(80, () => {
