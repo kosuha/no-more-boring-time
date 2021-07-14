@@ -3,7 +3,7 @@ async function log(isMobile, profile, score) {
         isMobile: isMobile
     };
 
-    let response = await fetch('/log-process', {
+    let response = await fetch('/random-block-puzzle/log-process', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json;charset=utf-8'

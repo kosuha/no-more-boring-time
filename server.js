@@ -91,7 +91,7 @@ app.get('/random-block-puzzle', authenticateUser, (request, response) => {
     response.sendFile(__dirname + 'random-block-puzzle/index.html');
 });
 
-app.post('/user-data-process', (request, response) => {
+app.post('/random-block-puzzle/user-data-process', (request, response) => {
     const userData = request.session.passport.user;
     
     connection.query(`SELECT * FROM rank_random_block_puzzle WHERE id_kakao = ${userData.id}`,
@@ -107,14 +107,14 @@ app.post('/user-data-process', (request, response) => {
         });
 });
 
-app.post('/ranking-process', (request, response) => {
+app.post('/random-block-puzzle/ranking-process', (request, response) => {
     connection.query('SELECT * FROM rank_random_block_puzzle ORDER BY score DESC LIMIT 10',
         (error, rows, fields) => {
             response.json(rows);
         });
 });
 
-app.post('/score-upload-process', (request, response) => {
+app.post('/random-block-puzzle/score-upload-process', (request, response) => {
     const userData = request.session.passport.user;
     connection.query(
         `INSERT INTO log_random_block_puzzle(id_kakao, nickname_kakao, username_kakao, profile_image, score, level, mobile) VALUES(?, ?, ?, ?, ?, ?, ?)`,

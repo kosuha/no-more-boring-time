@@ -355,7 +355,7 @@ function device_check() {
 getUserData();
 
 async function getUserData() {
-    let response = await fetch('/user-data-process', {
+    let response = await fetch('/random-block-puzzle/user-data-process', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json;charset=utf-8'
@@ -376,7 +376,7 @@ async function getUserData() {
 }
 
 async function updateHighest() {
-    let response = await fetch('/user-data-process', {
+    let response = await fetch('/random-block-puzzle/user-data-process', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json;charset=utf-8'
@@ -396,7 +396,7 @@ kakaoInit();
 function shareScore() {
     document.querySelector('#kakao-link-btn').addEventListener('click' || 'touchstart', () => {
         async function shareHighest() {
-            let response = await fetch('/user-data-process', {
+            let response = await fetch('/random-block-puzzle/user-data-process', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json;charset=utf-8'

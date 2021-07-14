@@ -17,7 +17,7 @@ function generateRankingTable() {
 }
 
 async function rankingData() {
-    let response = await fetch('/ranking-process', {
+    let response = await fetch('/random-block-puzzle/ranking-process', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json;charset=utf-8'
@@ -63,7 +63,7 @@ function uploadScore(_score, _level) {
             isMobile: isMobile
         };
 
-        let response = await fetch('/score-upload-process', {
+        let response = await fetch('/random-block-puzzle/score-upload-process', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json;charset=utf-8'
