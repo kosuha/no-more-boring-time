@@ -5,4 +5,4 @@ router.get('/', function(req, res) {
     response.sendFile(__dirname + 'alien-hunter/index.html');
 });
 
-module.exports = router
+module.exports = router;

@@ -68,4 +68,4 @@ router.post('/score-upload-process', (request, response) => {
         });
 });
 
-module.exports = router
+module.exports = router;
