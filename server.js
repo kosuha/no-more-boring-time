@@ -11,6 +11,8 @@ const sessionData = require('./config/session.json');
 const MySQLStore = require('express-mysql-session')(session);
 const sessionStoreConn = require('./config/sessionStoreConn.js');
 
+const auth = require('./auth');
+
 const covid19 = require('./router/covid-19');
 const randomBlockPuzzle = require('./router/random-block-puzzle');
 const alienHunter = require('./router/alien-hunter');
@@ -20,13 +22,15 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 // 세션 검사
-const authenticateUser = (request, response, next) => {
-    if (request.isAuthenticated()) {
-        next();
-    } else {
-        response.status(301).redirect('/signin');
-    }
-};
+// const authenticateUser = (request, response, next) => {
+//     if (request.isAuthenticated()) {
+//         console.log(request.isAuthenticated());
+        
+//         next();
+//     } else {
+//         response.status(301).redirect('/signin');
+//     }
+// };
 
 app.use(session({
     secret: sessionData.data.secret,
@@ -79,7 +83,7 @@ app.get('/auth/kakao/callback',
     }
 );
 
-app.get('/', authenticateUser, (request, response) => {
+app.get('/', auth, (request, response) => {
     response.sendFile(__dirname + '/index.html');
 });
 

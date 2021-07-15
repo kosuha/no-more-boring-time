@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const connection = require('../config/conn.js');
+const auth = require('../auth');
 
-router.get('/', (request, response) => {
+router.get('/', auth, (request, response) => {
     response.sendFile(__dirname + 'random-block-puzzle/index.html');
 });
 
