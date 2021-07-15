@@ -11,6 +11,10 @@ const sessionData = require('./config/session.json');
 const MySQLStore = require('express-mysql-session')(session);
 const sessionStoreConn = require('./config/sessionStoreConn.js');
 
+const covid19 = require('./router/covid-19');
+const randomBlockPuzzle = require('./router/random-block-puzzle');
+const alienHunter = require('./router/alien-hunter');
+
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -83,79 +87,9 @@ app.get('/signin', (request, response) => {
     response.sendFile(__dirname + '/signin.html');
 });
 
-app.get('/covid-19', authenticateUser, (request, response) => {
-    response.sendFile(__dirname + 'covid-19/index.html');
-});
-
-app.get('/random-block-puzzle', authenticateUser, (request, response) => {
-    response.sendFile(__dirname + 'random-block-puzzle/index.html');
-});
-
-app.post('/random-block-puzzle/user-data-process', (request, response) => {
-    const userData = request.session.passport.user;
-    
-    connection.query(`SELECT * FROM rank_random_block_puzzle WHERE id_kakao = ${userData.id}`,
-        (error, rows, fields) => {
-            if (error) {
-                throw error;
-            }
-            if (Object.keys(rows).length === 0) {
-                response.json({userData: userData, highest: 0});
-            } else {
-                response.json({userData: userData, highest: rows[0].score});
-            }
-        });
-});
-
-app.post('/random-block-puzzle/ranking-process', (request, response) => {
-    connection.query('SELECT * FROM rank_random_block_puzzle ORDER BY score DESC LIMIT 10',
-        (error, rows, fields) => {
-            response.json(rows);
-        });
-});
-
-app.post('/random-block-puzzle/score-upload-process', (request, response) => {
-    const userData = request.session.passport.user;
-    connection.query(
-        `INSERT INTO log_random_block_puzzle(id_kakao, nickname_kakao, username_kakao, profile_image, score, level, mobile) VALUES(?, ?, ?, ?, ?, ?, ?)`,
-        [userData.id, userData.userName, userData.nickName, userData.profileImageURL, request.body.score, request.body.level, request.body.isMobile],
-        (error, rows, fields) => {
-            if (error) {
-                throw error;
-            }
-        });
-
-    connection.query(`SELECT * FROM rank_random_block_puzzle WHERE id_kakao = ${userData.id}`,
-        (error, rows, fields) => {
-            if (error) {
-                throw error;
-            }
-            if (Object.keys(rows).length === 0) {
-                connection.query(
-                    `INSERT INTO rank_random_block_puzzle(id_kakao, nickname_kakao, username_kakao, profile_image, score, level) VALUES(?, ?, ?, ?, ?, ?)`,
-                    [userData.id, userData.userName, userData.nickName, userData.profileImageURL, request.body.score, request.body.level],
-                    (error, rows, fields) => {
-                        if (error) {
-                            throw error;
-                        }
-                    });
-            } else {
-                if (rows[0].score < request.body.score) {
-                    connection.query(
-                        `UPDATE rank_random_block_puzzle SET score = '${request.body.score}', level = '${request.body.level}', nickname_kakao = '${userData.nickName}' WHERE id_kakao = '${userData.id}'`,
-                        (error, rows, fields) => {
-                            if (error) {
-                                throw error;
-                            }
-                        });
-                }
-            }
-        });
-});
-
-app.get('/alien-hunter', authenticateUser, (request, response) => {
-    response.sendFile(__dirname + 'alien-hunter/index.html');
-});
+app.use('/covid-19', covid19);
+app.use('/random-block-puzzle', randomBlockPuzzle);
+app.use('/alien-hunter', alienHunter);
 
 http.listen(80, () => {
     console.log('app run!')
