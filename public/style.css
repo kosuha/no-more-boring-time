@@ -1,8 +1,42 @@
-.gameList {
-    display: flex;
-    flex-direction: column;
+a {
+    text-decoration: none;
 }
 
-.gameList>a {
-    padding: 5px;
+a:visited {
+    color: black;
+}
+
+body {
+    margin: 0;
+}
+
+.body_content {
+    padding: 10px;
+}
+
+.title {
+    padding: 10px;
+}
+.sub_title {
+    font-weight: 900;
+    padding: 10px;
+}
+
+.game_list {
+    display: flex;
+    flex-direction: row;
+}
+
+.game_list>div {
+    border: solid 1px blue;
+    border-radius: 20px;
+    padding: 20px;
+    margin: 5px;
+    width: 300px;
+    height: 200px;
+}
+
+.game_list > div > .game_title {
+    font-size: 20px;
+
 }
