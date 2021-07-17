@@ -10,12 +10,14 @@ const session = require('express-session');
 const sessionData = require('./config/session.json');
 const MySQLStore = require('express-mysql-session')(session);
 const sessionStoreConn = require('./config/sessionStoreConn.js');
+const io = require("socket.io")(http);
 
 const auth = require('./auth');
-
 const covid19 = require('./router/covid-19');
 const randomBlockPuzzle = require('./router/random-block-puzzle');
 const alienHunter = require('./router/alien-hunter');
+
+let visitNumber = 0;
 
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -68,6 +70,8 @@ passport.use(new kakaoStrategy({
             profileImageURL: profileImageURL
         };
 
+        visitNumber++;
+
         done(null, user);
     }
 ));
@@ -95,6 +99,16 @@ app.use('/covid-19', covid19);
 app.use('/random-block-puzzle', randomBlockPuzzle);
 app.use('/alien-hunter', alienHunter);
 
+// socketIO
+io.on("connection", function (socket) {
+    console.log("user connected: ", socket.id);
+    io.emit("todayVisit", visitNumber);
+
+    socket.on("disconnect", function () {
+        console.log("user disconnected: ", socket.id);
+    });
+});
+
 http.listen(80, () => {
-    console.log('app run!')
+    console.log('########## app run! ##########')
 });
