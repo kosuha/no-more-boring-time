@@ -11,7 +11,7 @@ if((window.innerWidth / window.innerHeight) > (400 / 700)) {
 
 const CONFIG = {
     type: Phaser.AUTO,
-    scene: [GameScene, GameOverScene],
+    scene: [GameScene],
     mode: Phaser.Scale.RESIZE,
     width: width,
     height: height,
@@ -29,6 +29,3 @@ const GAME = new Phaser.Game(CONFIG);
 const WIDTH = GAME.config.width;
 const HEIGHT = GAME.config.height;
 const EMITTER = new Phaser.Events.EventEmitter();
-
-// TODO
-// 게임오버 넘어가기
