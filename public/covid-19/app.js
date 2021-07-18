@@ -22,7 +22,7 @@ const CONFIG = {
             debug: false,
         },
     },
-    pixelArt: false,
+    pixelArt: false
 };
 
 const GAME = new Phaser.Game(CONFIG);
