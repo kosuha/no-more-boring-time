@@ -92,7 +92,7 @@ app.get("/signin", (request, response) => {
 });
 
 // socketIO
-let players = {};
+let rooms = {};
 io.on("connection", async (socket) => {
     console.log("user connected: ", socket.id);
 
@@ -112,16 +112,23 @@ io.on("connection", async (socket) => {
 
     socket.on("GenerateRoom", () => {
         const roomId = socket.id + "_room";
-        console.log("-----------------GenerateRoom: ", roomId);
+        console.log("-GenerateRoom-");
+        const roomlink = "http://localhost/jump-race/?room="+roomId
+        console.log(roomlink);
         socket.join(roomId);
         socket.gameData = {
             player: socket.id,
-            joinedRoomId: roomId
+            joinedRoomId: roomId,
         };
         io.to(socket.gameData.joinedRoomId).emit(
             "generatePlayer",
             socket.gameData
         );
+
+        rooms[roomId] = new Room(roomId);
+        player = new Player(socket.id);
+        rooms[roomId].pushMember(player);
+        console.log(rooms[roomId].getMembers());
     });
 
     socket.on("joinRoom", (room) => {
@@ -131,14 +138,71 @@ io.on("connection", async (socket) => {
         console.log(playerListInRoom.size);
         socket.gameData = {
             player: socket.id,
-            joinedRoomId: room.id
+            joinedRoomId: room.id,
         };
         io.to(socket.gameData.joinedRoomId).emit(
             "generatePlayer",
             socket.gameData
         );
+
+        player = new Player(socket.id);
+        rooms[room.id].pushMember(player);
+        console.log(rooms[room.id].getMembers());
+    });
+
+    socket.on("left", (data) => {
+        console.log(data, 'left');
+        io.to(data.roomId).emit("left", data.player);
+    });
+    socket.on("right", (data) => {
+        console.log(data, 'right');
+        io.to(data.roomId).emit("right", data.player);
+    });
+    socket.on("jump", (data) => {
+        console.log(data, 'jump');
+        io.to(data.roomId).emit("jump", data.player);
+    });
+    socket.on("turn", (data) => {
+        console.log(data, 'turn');
+        io.to(data.roomId).emit("turn", data.player);
     });
 });
+
+class Room {
+    constructor(roomId) {
+        this.name = roomId;
+        this.members = {};
+    }
+
+    pushMember(player) {
+        this.members[player.getId()] = player;
+    }
+
+    popMember(playerId) {
+        if (playerId in this.members) {
+            delete this.members[playerId];
+        }
+    }
+
+    getMembers() {
+        return this.members;
+    }
+}
+
+class Player {
+    constructor(id) {
+        this.id = id;
+        this.nickName = 'testnick';
+    }
+
+    getId(){
+        return this.id;
+    }
+
+    getNickName() {
+        return this.nickName;
+    }
+}
 
 app.use("/covid-19", covid19);
 app.use("/random-block-puzzle", randomBlockPuzzle);
