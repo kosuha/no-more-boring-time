@@ -21,12 +21,12 @@ class Player {
         this.positionX = this.lerp(
             this.positionX,
             (WIDTH * positionX) / 400,
-            0.01
+            0.05
         );
         this.positionY = this.lerp(
             this.positionY,
             (HEIGHT * positionY) / 700,
-            0.01
+            0.05
         );
 
         // this.positionX = WIDTH * positionX / 400;

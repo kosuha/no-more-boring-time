@@ -107,7 +107,14 @@ io.on("connection", async (socket) => {
 
     socket.on("disconnect", function () {
         console.log("user disconnected: ", socket.id);
-        socket.leave(socket.joinedRoomId);
+        if (socket.gameData != undefined) {
+            io.to(socket.gameData.joinedRoomId).emit("disconnected", socket.id);
+            rooms[socket.gameData.joinedRoomId].popMember(socket.id);
+            socket.leave(socket.gameData.joinedRoomId);
+            if (Object.keys(rooms[socket.gameData.joinedRoomId].members).length === 0) {
+                delete rooms[socket.gameData.joinedRoomId];
+            }
+        }
     });
 
     socket.on("GenerateRoom", (nickName) => {
@@ -196,7 +203,7 @@ io.on("connection", async (socket) => {
             }
             io.to(room).emit("update", rooms[room]);
         }
-    }, 1);
+    }, 10);
 });
 
 class Room {
@@ -279,10 +286,10 @@ class Player {
     constructor(id, nickName) {
         this.id = id;
         this.nickName = nickName;
-        this.positionX = 200;
-        this.positionY = 350;
         this.width = 50;
         this.height = 50;
+        this.positionX = 200 - this.width / 2;
+        this.positionY = 650 - this.height / 2;
         this.speed = 10;
         this.color =
             "rgba(" +

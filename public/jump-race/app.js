@@ -63,6 +63,10 @@ function setup(nickName) {
         // console.log(players);
     });
 
+    socket.on("disconnected", (id) => {
+        delete players[id];
+    });
+
     window.addEventListener("keydown", function (e) {
         socket.emit("keyInput", {
             player: socket.id,
