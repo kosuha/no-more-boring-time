@@ -113,21 +113,25 @@ io.on("connection", async (socket) => {
     socket.on("GenerateRoom", () => {
         const roomId = socket.id + "_room";
         console.log("-GenerateRoom-");
-        const roomlink = "http://localhost/jump-race/?room="+roomId
+        const roomlink = "http://localhost/jump-race/?room=" + roomId;
         console.log(roomlink);
         socket.join(roomId);
+
+        let player = new Player(socket.id);
+        rooms[roomId] = new Room(roomId);
+        rooms[roomId].pushMember(player);
+
         socket.gameData = {
-            player: socket.id,
+            player: player,
             joinedRoomId: roomId,
+            roomData: rooms[roomId],
         };
+
         io.to(socket.gameData.joinedRoomId).emit(
             "generatePlayer",
             socket.gameData
         );
 
-        rooms[roomId] = new Room(roomId);
-        player = new Player(socket.id);
-        rooms[roomId].pushMember(player);
         console.log(rooms[roomId].getMembers());
     });
 
@@ -136,35 +140,43 @@ io.on("connection", async (socket) => {
         socket.join(room.id);
         const playerListInRoom = io.sockets.adapter.rooms.get(room.id);
         console.log(playerListInRoom.size);
+
+        let player = new Player(socket.id);
+        rooms[room.id].pushMember(player);
         socket.gameData = {
-            player: socket.id,
+            player: player,
             joinedRoomId: room.id,
+            roomData: rooms[room.id],
         };
         io.to(socket.gameData.joinedRoomId).emit(
             "generatePlayer",
             socket.gameData
         );
 
-        player = new Player(socket.id);
-        rooms[room.id].pushMember(player);
         console.log(rooms[room.id].getMembers());
     });
 
-    socket.on("left", (data) => {
-        console.log(data, 'left');
-        io.to(data.roomId).emit("left", data.player);
-    });
-    socket.on("right", (data) => {
-        console.log(data, 'right');
-        io.to(data.roomId).emit("right", data.player);
-    });
-    socket.on("jump", (data) => {
-        console.log(data, 'jump');
-        io.to(data.roomId).emit("jump", data.player);
-    });
-    socket.on("turn", (data) => {
-        console.log(data, 'turn');
-        io.to(data.roomId).emit("turn", data.player);
+    socket.on("keyInput", (data) => {
+        const player = rooms[data.room].getMembers()[data.player];
+
+        switch (data.input) {
+            case "ArrowUp":
+                player.goUp();
+                break;
+            case "ArrowDown":
+                player.goDown();
+                break;
+            case "ArrowLeft":
+                player.goLeft();
+                break;
+            case "ArrowRight":
+                player.goRight();
+                break;
+            default:
+                break;
+        }
+
+        io.to(data.room).emit("update", player);
     });
 });
 
@@ -192,16 +204,45 @@ class Room {
 class Player {
     constructor(id) {
         this.id = id;
-        this.nickName = 'testnick';
+        this.nickName = "testnick";
+        this.positionX = 200;
+        this.positionY = 350;
+        this.speed = 10;
+        this.gravity = 3;
+        this.color = 'rgba('+randomNumber(100, 255)+','+randomNumber(100, 255)+','+randomNumber(100, 255)+')';
     }
 
-    getId(){
+    getId() {
         return this.id;
     }
 
     getNickName() {
         return this.nickName;
     }
+
+    getPosition() {
+        return { x: this.positionX, y: this.positionY };
+    }
+
+    goLeft() {
+        this.positionX -= this.speed;
+    }
+
+    goRight() {
+        this.positionX += this.speed;
+    }
+
+    goUp() {
+        this.positionY -= this.speed;
+    }
+
+    goDown() {
+        this.positionY += this.speed;
+    }
+}
+
+function randomNumber(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 app.use("/covid-19", covid19);
