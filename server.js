@@ -110,14 +110,14 @@ io.on("connection", async (socket) => {
         socket.leave(socket.joinedRoomId);
     });
 
-    socket.on("GenerateRoom", () => {
+    socket.on("GenerateRoom", (nickName) => {
         const roomId = socket.id + "_room";
         console.log("-GenerateRoom-");
         const roomlink = "http://localhost/jump-race/?room=" + roomId;
         console.log(roomlink);
         socket.join(roomId);
 
-        let player = new Player(socket.id);
+        let player = new Player(socket.id, nickName);
         rooms[roomId] = new Room(roomId);
         rooms[roomId].pushMember(player);
 
@@ -135,25 +135,25 @@ io.on("connection", async (socket) => {
         console.log(rooms[roomId].getMembers());
     });
 
-    socket.on("joinRoom", (room) => {
-        console.log(socket.id, "join room: ", room.id);
-        socket.join(room.id);
-        const playerListInRoom = io.sockets.adapter.rooms.get(room.id);
+    socket.on("joinRoom", (data) => {
+        console.log(socket.id, "join room: ", data.roomId);
+        socket.join(data.roomId);
+        const playerListInRoom = io.sockets.adapter.rooms.get(data.roomId);
         console.log(playerListInRoom.size);
 
-        let player = new Player(socket.id);
-        rooms[room.id].pushMember(player);
+        let player = new Player(socket.id, data.nickName);
+        rooms[data.roomId].pushMember(player);
         socket.gameData = {
             player: player,
-            joinedRoomId: room.id,
-            roomData: rooms[room.id],
+            joinedRoomId: data.roomId,
+            roomData: rooms[data.roomId],
         };
         io.to(socket.gameData.joinedRoomId).emit(
             "generatePlayer",
             socket.gameData
         );
 
-        console.log(rooms[room.id].getMembers());
+        console.log(rooms[data.roomId].getMembers());
     });
 
     socket.on("keyInput", (data) => {
@@ -202,14 +202,18 @@ class Room {
 }
 
 class Player {
-    constructor(id) {
+    constructor(id, nickName) {
         this.id = id;
-        this.nickName = "testnick";
+        this.nickName = nickName;
         this.positionX = 200;
         this.positionY = 350;
         this.speed = 10;
         this.gravity = 3;
         this.color = 'rgba('+randomNumber(100, 255)+','+randomNumber(100, 255)+','+randomNumber(100, 255)+')';
+    }
+
+    setNickName(nickName) {
+        this.nickName = nickName;
     }
 
     getId() {

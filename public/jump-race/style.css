@@ -12,3 +12,39 @@ body {
 canvas {
     border: 1px solid black;
 }
+
+#popup_background {
+    position: fixed;
+    margin: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    align-content: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+#popup {
+    /* position: fixed; */
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    align-content: center;
+    justify-content: center;
+    background-color: rgba(255, 255, 255, 0.6);
+    border-radius: 15px;
+    padding: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.5)
+}
+
+#popup > div {
+    padding: 5px;
+}
+
+#popup > #popup_title > input {
+    height: fit-content;
+    font-size: 20px;
+}

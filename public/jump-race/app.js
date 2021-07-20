@@ -23,7 +23,7 @@ const HEIGHT = canvas.height;
 let roomId;
 let players = {};
 
-function setup() {
+function setup(nickName) {
     ctx.clearRect(0, 0, WIDTH, HEIGHT);
 
     ctx.fillStyle = "rgb(255, 255, 255)";
@@ -33,11 +33,15 @@ function setup() {
     const urlParams = url.searchParams;
 
     if (urlParams.has("room")) {
-        socket.emit("joinRoom", { id: urlParams.get("room") });
+        socket.emit("joinRoom", { roomId: urlParams.get("room"), nickName: nickName });
         roomId = urlParams.get("room");
     } else {
-        socket.emit("GenerateRoom");
+        socket.emit("GenerateRoom", nickName);
         roomId = socket.id + "_room";
+        const link =
+            "http://ec2-3-35-14-224.ap-northeast-2.compute.amazonaws.com/jump-race/?room=" +
+            roomId;
+        console.log(link);
     }
 
     socket.on("generatePlayer", (gameData) => {
@@ -48,11 +52,12 @@ function setup() {
                     member,
                     members[member].positionX,
                     members[member].positionY,
-                    members[member].color
+                    members[member].color,
+                    members[member].nickName
                 );
             }
         }
-        console.log(players);
+        // console.log(players);
     });
 
     window.addEventListener("keydown", function (e) {
@@ -68,7 +73,7 @@ function setup() {
     });
 
     socket.on("update", (player) => {
-        console.log("update", player);
+        // console.log("update", player);
         players[player.id].updatePosition(player.positionX, player.positionY);
     });
 }
@@ -86,7 +91,15 @@ function draw() {
 
 window.onload = () => {
     setTimeout(() => {
-        setup();
-        setInterval(draw, 10);
-    }, 100);
+        const nickNameInput = document.querySelector("#nickname");
+        const nickNameEnterButton = document.querySelector("#nickname_enter");
+        const popup = document.querySelector("#popup_background");
+
+        nickNameEnterButton.addEventListener("click", () => {
+            popup.remove();
+            
+            setup(nickNameInput.value);
+            setInterval(draw, 1);
+        });
+    }, 1000);
 };
