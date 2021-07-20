@@ -22,6 +22,7 @@ const HEIGHT = canvas.height;
 
 let roomId;
 let players = {};
+const platform = new Platform();
 
 function setup(nickName) {
     ctx.clearRect(0, 0, WIDTH, HEIGHT);
@@ -52,6 +53,8 @@ function setup(nickName) {
                     member,
                     members[member].positionX,
                     members[member].positionY,
+                    members[member].width,
+                    members[member].height,
                     members[member].color,
                     members[member].nickName
                 );
@@ -72,9 +75,12 @@ function setup(nickName) {
         socket.emit("turn", { player: socket.id, room: roomId });
     });
 
-    socket.on("update", (player) => {
+    socket.on("update", (room) => {
         // console.log("update", player);
-        players[player.id].updatePosition(player.positionX, player.positionY);
+        for(let member in room.members){
+            let player = room.members[member];
+            players[player.id].updatePosition(player.positionX, player.positionY);
+        }
     });
 }
 
@@ -87,6 +93,10 @@ function draw() {
         // console.log(players[player]);
         players[player].display();
     }
+
+    platform.display(HEIGHT*0/700, HEIGHT*690/700, HEIGHT*400/700, HEIGHT*10/700);
+    platform.display(HEIGHT*0/700, HEIGHT*0/700, HEIGHT*10/700, HEIGHT*700/700);
+    platform.display(HEIGHT*390/700, HEIGHT*0/700, HEIGHT*10/700, HEIGHT*700/700);
 }
 
 window.onload = () => {

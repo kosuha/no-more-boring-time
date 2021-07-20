@@ -161,10 +161,6 @@ io.on("connection", async (socket) => {
 
         switch (data.input) {
             case "ArrowUp":
-                player.goUp();
-                break;
-            case "ArrowDown":
-                player.goDown();
                 break;
             case "ArrowLeft":
                 player.goLeft();
@@ -175,15 +171,39 @@ io.on("connection", async (socket) => {
             default:
                 break;
         }
-
-        io.to(data.room).emit("update", player);
     });
+
+    const floor = new Platform(0, 690, 400, 300);
+    const wallLeft = new Platform(0, 0, 10, 700);
+    const wallRight = new Platform(390, 0, 10, 700);
+
+    setInterval(() => {
+        for (let room in rooms) {
+            for (let member in rooms[room].members) {
+                let player = rooms[room].members[member];
+                
+                rooms[room].useGravity(player);
+                rooms[room].useCollisionWithFloor(player, floor);
+                rooms[room].useCollisionWithWall(player, wallLeft, wallRight);
+                for (let member_ in rooms[room].members) {
+                    if (member != member_) {
+                        rooms[room].useCollisionWithPlayer(
+                            player,
+                            rooms[room].members[member_]
+                        );
+                    }
+                }
+            }
+            io.to(room).emit("update", rooms[room]);
+        }
+    }, 1);
 });
 
 class Room {
     constructor(roomId) {
         this.name = roomId;
         this.members = {};
+        this.gravity = 1;
     }
 
     pushMember(player) {
@@ -199,6 +219,60 @@ class Room {
     getMembers() {
         return this.members;
     }
+
+    useGravity(player) {
+        player.positionY += this.gravity;
+    }
+
+    useCollisionWithFloor(a, b) {
+        if (
+            b.positionY < a.positionY + a.height &&
+            a.positionY + a.height < b.positionY + b.height / 2 &&
+            a.positionX + a.width > b.positionX &&
+            a.positionX < b.positionX + b.width
+        ) {
+            a.positionY = b.positionY - a.height - 1;
+        }
+
+        if (
+            b.positionY + b.height / 2 < a.positionY &&
+            a.positionY < b.positionY + b.height &&
+            a.positionX + a.width > b.positionX &&
+            a.positionX < b.positionX + b.width
+        ) {
+            a.positionY = b.positionY + b.height + 1;
+        }
+
+        if (
+            b.positionX < a.positionX + a.width &&
+            a.positionX + a.width < b.positionX + b.width / 2 &&
+            a.positionY + a.height > b.positionY &&
+            a.positionY < b.positionY + b.height
+        ) {
+            a.positionX = b.positionX - a.width - 1;
+        }
+
+        if (
+            b.positionX + b.width / 2 < a.positionX &&
+            a.positionX < b.positionX + b.width &&
+            a.positionY + a.height > b.positionY &&
+            a.positionY < b.positionY + b.height
+        ) {
+            a.positionX = b.positionX + b.width + 1;
+        }
+    }
+
+    useCollisionWithWall(player, leftWall, rightWall) {
+        if (player.positionX < leftWall.positionX + leftWall.width) {
+            player.positionX = leftWall.positionX + leftWall.width;
+        }
+
+        if (player.positionX + player.width > rightWall.positionX) {
+            player.positionX = rightWall.positionX - player.width;
+        }
+    }
+
+    useCollisionWithPlayer(a, b) {}
 }
 
 class Player {
@@ -207,9 +281,19 @@ class Player {
         this.nickName = nickName;
         this.positionX = 200;
         this.positionY = 350;
+        this.width = 50;
+        this.height = 50;
         this.speed = 10;
-        this.gravity = 3;
-        this.color = 'rgba('+randomNumber(100, 255)+','+randomNumber(100, 255)+','+randomNumber(100, 255)+')';
+        this.color =
+            "rgba(" +
+            randomNumber(150, 255) +
+            "," +
+            randomNumber(150, 255) +
+            "," +
+            randomNumber(150, 255) +
+            "," +
+            1 +
+            ")";
     }
 
     setNickName(nickName) {
@@ -237,16 +321,25 @@ class Player {
     }
 
     goUp() {
-        this.positionY -= this.speed;
+        this.positionY = lerp(this.positionY, this.positionY + 10, 0.01);
     }
+}
 
-    goDown() {
-        this.positionY += this.speed;
+class Platform {
+    constructor(positionX, positionY, platformWidth, platformHeight) {
+        this.positionX = positionX;
+        this.positionY = positionY;
+        this.width = platformWidth;
+        this.height = platformHeight;
     }
 }
 
 function randomNumber(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function lerp(start, end, amt) {
+    return (1 - amt) * start + amt * end;
 }
 
 app.use("/covid-19", covid19);
