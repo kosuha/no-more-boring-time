@@ -173,9 +173,9 @@ io.on("connection", async (socket) => {
         }
     });
 
-    const floor = new Platform(0, 690, 400, 300);
-    const wallLeft = new Platform(0, 0, 10, 700);
-    const wallRight = new Platform(390, 0, 10, 700);
+    const floor = new Platform(0, 700, 400, 300);
+    const wallLeft = new Platform(-10, 0, 10, 700);
+    const wallRight = new Platform(400, 0, 10, 700);
 
     setInterval(() => {
         for (let room in rooms) {

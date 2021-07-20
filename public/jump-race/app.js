@@ -94,9 +94,9 @@ function draw() {
         players[player].display();
     }
 
-    platform.display(HEIGHT*0/700, HEIGHT*690/700, HEIGHT*400/700, HEIGHT*10/700);
-    platform.display(HEIGHT*0/700, HEIGHT*0/700, HEIGHT*10/700, HEIGHT*700/700);
-    platform.display(HEIGHT*390/700, HEIGHT*0/700, HEIGHT*10/700, HEIGHT*700/700);
+    platform.display(HEIGHT*0/700, HEIGHT*700/700, HEIGHT*400/700, HEIGHT*10/700);
+    platform.display(HEIGHT*-10/700, HEIGHT*0/700, HEIGHT*10/700, HEIGHT*700/700);
+    platform.display(HEIGHT*400/700, HEIGHT*0/700, HEIGHT*10/700, HEIGHT*700/700);
 }
 
 window.onload = () => {
