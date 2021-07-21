@@ -44,6 +44,18 @@ class Player {
             this.positionX,
             this.positionY - (WIDTH * 10) / 400
         );
+
+        ctx.fillStyle = "white";
+        ctx.fillRect(this.positionX + (WIDTH * 5) / 400, this.positionY + (WIDTH * 12) / 400, (WIDTH * 15) / 400, (WIDTH * 15) / 400);
+        ctx.fillStyle = "black";
+        ctx.fillRect(this.positionX + (WIDTH * 8) / 400, this.positionY + (WIDTH * 15) / 400, (WIDTH * 8) / 400, (WIDTH * 8) / 400);
+
+        ctx.fillStyle = "white";
+        ctx.fillRect(this.positionX + (WIDTH * 30) / 400, this.positionY + (WIDTH * 12) / 400, (WIDTH * 15) / 400, (WIDTH * 15) / 400);
+        ctx.fillStyle = "black";
+        ctx.fillRect(this.positionX + (WIDTH * 33) / 400, this.positionY + (WIDTH * 15) / 400, (WIDTH * 8) / 400, (WIDTH * 8) / 400);
+
+        
     }
 
     lerp(start, end, amt) {
