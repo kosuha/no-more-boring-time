@@ -149,6 +149,15 @@ window.onload = () => {
         const nickNameEnterButton = document.querySelector("#nickname_enter");
         const popup = document.querySelector("#popup_background");
 
+        socket.on("redirect", () => {
+            const roomCheck = confirm('해당하는 방이 없습니다! 새로운 방을 만들까요?');
+            if (roomCheck === true){
+                window.location.href = "./";
+            } else {
+                window.close();
+            }
+        });
+
         nickNameEnterButton.addEventListener("click", () => {
             popup.remove();
             setup(nickNameInput.value);

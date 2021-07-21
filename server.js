@@ -143,24 +143,29 @@ io.on("connection", async (socket) => {
     });
 
     socket.on("joinRoom", (data) => {
-        console.log(socket.id, "join room: ", data.roomId);
-        socket.join(data.roomId);
-        const playerListInRoom = io.sockets.adapter.rooms.get(data.roomId);
-        console.log(playerListInRoom.size);
-
-        let player = new Player(socket.id, data.nickName);
-        rooms[data.roomId].pushMember(player);
-        socket.gameData = {
-            player: player,
-            joinedRoomId: data.roomId,
-            roomData: rooms[data.roomId],
-        };
-        io.to(socket.gameData.joinedRoomId).emit(
-            "generatePlayer",
-            socket.gameData
-        );
-
-        console.log(rooms[data.roomId].getMembers());
+        if (rooms[data.roomId] === undefined){
+            io.to(socket.id).emit("redirect");
+        } else {
+            console.log(socket.id, "join room: ", data.roomId);
+            socket.join(data.roomId);
+            const playerListInRoom = io.sockets.adapter.rooms.get(data.roomId);
+            console.log(playerListInRoom.size);
+    
+            let player = new Player(socket.id, data.nickName);
+            rooms[data.roomId].pushMember(player);
+            socket.gameData = {
+                player: player,
+                joinedRoomId: data.roomId,
+                roomData: rooms[data.roomId],
+            };
+            io.to(socket.gameData.joinedRoomId).emit(
+                "generatePlayer",
+                socket.gameData
+            );
+    
+            console.log(rooms[data.roomId].getMembers());
+        }
+        
     });
 
     socket.on("updatePosition", (data) => {
