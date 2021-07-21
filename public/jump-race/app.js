@@ -23,6 +23,26 @@ const HEIGHT = canvas.height;
 let roomId;
 let players = {};
 const platform = new Platform();
+const physics = new Physics();
+
+const floor = new Platform(
+    (HEIGHT * 0) / 700,
+    (HEIGHT * 700) / 700,
+    (HEIGHT * 400) / 700,
+    (HEIGHT * 300) / 700
+);
+const wallLeft = new Platform(
+    (HEIGHT * -20) / 700,
+    (HEIGHT * 0) / 700,
+    (HEIGHT * 20) / 700,
+    (HEIGHT * 700) / 700
+);
+const wallRight = new Platform(
+    (HEIGHT * 400) / 700,
+    (HEIGHT * 0) / 700,
+    (HEIGHT * 20) / 700,
+    (HEIGHT * 700) / 700
+);
 
 function setup(nickName) {
     ctx.clearRect(0, 0, WIDTH, HEIGHT);
@@ -34,7 +54,10 @@ function setup(nickName) {
     const urlParams = url.searchParams;
 
     if (urlParams.has("room")) {
-        socket.emit("joinRoom", { roomId: urlParams.get("room"), nickName: nickName });
+        socket.emit("joinRoom", {
+            roomId: urlParams.get("room"),
+            nickName: nickName,
+        });
         roomId = urlParams.get("room");
     } else {
         socket.emit("GenerateRoom", nickName);
@@ -60,7 +83,6 @@ function setup(nickName) {
                 );
             }
         }
-        // console.log(players);
     });
 
     socket.on("disconnected", (id) => {
@@ -68,22 +90,20 @@ function setup(nickName) {
     });
 
     window.addEventListener("keydown", function (e) {
-        socket.emit("keyInput", {
-            player: socket.id,
-            room: roomId,
-            input: e.code,
-        });
-    });
+        if (e.code === "ArrowLeft") {
+            players[socket.id].goLeft();
+        }
 
-    window.addEventListener("keyup", function (e) {
-        socket.emit("turn", { player: socket.id, room: roomId });
-    });
+        if (e.code === "ArrowRight") {
+            players[socket.id].goRight();
+        }
 
-    socket.on("update", (room) => {
-        // console.log("update", player);
-        for(let member in room.members){
-            let player = room.members[member];
-            players[player.id].updatePosition(player.positionX, player.positionY);
+        if (e.code === "ArrowUp") {
+            players[socket.id].goUp();
+        }
+
+        if (e.code === "ArrowDown") {
+            players[socket.id].goDown();
         }
     });
 }
@@ -93,14 +113,23 @@ function draw() {
     ctx.fillStyle = "rgb(255, 255, 255)";
     ctx.fillRect(0, 0, WIDTH, HEIGHT);
 
+    socket.on("updatePosition", (player) => {
+        players[player.id].setPosition((WIDTH * player.positionX) / 400, (HEIGHT * player.positionY) / 700);
+    });
+
     for (let player in players) {
-        // console.log(players[player]);
+        physics.useGravity(players[player]);
+        physics.useCollisionWithFloor(players[player], floor);
+        physics.useCollisionWithWall(players[player], wallLeft, wallRight);
+
         players[player].display();
     }
 
-    platform.display(HEIGHT*0/700, HEIGHT*700/700, HEIGHT*400/700, HEIGHT*10/700);
-    platform.display(HEIGHT*-10/700, HEIGHT*0/700, HEIGHT*10/700, HEIGHT*700/700);
-    platform.display(HEIGHT*400/700, HEIGHT*0/700, HEIGHT*10/700, HEIGHT*700/700);
+    socket.emit("updatePosition", { room: roomId, player: players[socket.id] });
+    
+    floor.display();
+    wallLeft.display();
+    wallRight.display();
 }
 
 window.onload = () => {
@@ -111,9 +140,9 @@ window.onload = () => {
 
         nickNameEnterButton.addEventListener("click", () => {
             popup.remove();
-            
+
             setup(nickNameInput.value);
-            setInterval(draw, 1);
+            setInterval(draw, 1000 / 25);
         });
     }, 1000);
 };

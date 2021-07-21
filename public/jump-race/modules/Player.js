@@ -7,6 +7,11 @@ class Player {
         this.color = color;
         this.width = (WIDTH * width) / 400;
         this.height = (HEIGHT * height) / 700;
+        this.speed = (WIDTH * 5) / 400;;
+        this.canvasSize = {
+            x: WIDTH,
+            y: HEIGHT
+        }
     }
 
     getId() {
@@ -17,20 +22,29 @@ class Player {
         return this.nickName;
     }
 
-    updatePosition(positionX, positionY) {
-        this.positionX = this.lerp(
-            this.positionX,
-            (WIDTH * positionX) / 400,
-            0.05
-        );
-        this.positionY = this.lerp(
-            this.positionY,
-            (HEIGHT * positionY) / 700,
-            0.05
-        );
+    setPosition (positionX, positionY) {
+        this.positionX = positionX; 
+        this.positionY = positionY;
+    }
 
-        // this.positionX = WIDTH * positionX / 400;
-        // this.positionY = HEIGHT * positionY / 700;
+    goLeft() {
+        this.positionX -= this.speed;
+        // this.positionX = this.lerp(this.positionX, this.positionX - this.speed, 0.1);
+    }
+
+    goRight() {
+        this.positionX += this.speed;
+        // this.positionX = this.lerp(this.positionX, this.positionX + this.speed, 0.1);
+    }
+
+    goUp() {
+        this.positionY -= this.speed;
+        // this.positionX = this.lerp(this.positionX, this.positionX + this.speed, 0.1);
+    }
+
+    goDown() {
+        this.positionY += this.speed;
+        // this.positionX = this.lerp(this.positionX, this.positionX + this.speed, 0.1);
     }
 
     display() {

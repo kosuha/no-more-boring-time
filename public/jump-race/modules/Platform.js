@@ -1,9 +1,13 @@
 class Platform {
-    constructor() {
+    constructor(positionX, positionY, platformWidth, platformHeight) {
+        this.positionX = positionX;
+        this.positionY = positionY;
+        this.width = platformWidth;
+        this.height = platformHeight;
     }
 
-    display(positionX, positionY, platformWidth, platformHeight){
+    display(){
         ctx.fillStyle = 'black';
-        ctx.fillRect(positionX, positionY, platformWidth, platformHeight);
+        ctx.fillRect(this.positionX, this.positionY, this.platformWidth, this.platformHeight);
     }
 }

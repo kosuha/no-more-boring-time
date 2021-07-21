@@ -163,47 +163,15 @@ io.on("connection", async (socket) => {
         console.log(rooms[data.roomId].getMembers());
     });
 
-    socket.on("keyInput", (data) => {
-        const player = rooms[data.room].getMembers()[data.player];
+    socket.on("updatePosition", (data) => {
+        const updatePlayer = rooms[data.room].getMembers()[socket.id];
+        const positionX = (data.player.positionX / data.player.canvasSize.x) * 400;
+        const positionY = (data.player.positionY / data.player.canvasSize.y) * 700;
+        updatePlayer.setPosition(positionX, positionY);
 
-        switch (data.input) {
-            case "ArrowUp":
-                break;
-            case "ArrowLeft":
-                player.goLeft();
-                break;
-            case "ArrowRight":
-                player.goRight();
-                break;
-            default:
-                break;
-        }
+        socket.broadcast.to(data.room).emit("updatePosition", updatePlayer);
     });
 
-    const floor = new Platform(0, 700, 400, 300);
-    const wallLeft = new Platform(-10, 0, 10, 700);
-    const wallRight = new Platform(400, 0, 10, 700);
-
-    setInterval(() => {
-        for (let room in rooms) {
-            for (let member in rooms[room].members) {
-                let player = rooms[room].members[member];
-                
-                rooms[room].useGravity(player);
-                rooms[room].useCollisionWithFloor(player, floor);
-                rooms[room].useCollisionWithWall(player, wallLeft, wallRight);
-                for (let member_ in rooms[room].members) {
-                    if (member != member_) {
-                        rooms[room].useCollisionWithPlayer(
-                            player,
-                            rooms[room].members[member_]
-                        );
-                    }
-                }
-            }
-            io.to(room).emit("update", rooms[room]);
-        }
-    }, 10);
 });
 
 class Room {
@@ -227,59 +195,6 @@ class Room {
         return this.members;
     }
 
-    useGravity(player) {
-        player.positionY += this.gravity;
-    }
-
-    useCollisionWithFloor(a, b) {
-        if (
-            b.positionY < a.positionY + a.height &&
-            a.positionY + a.height < b.positionY + b.height / 2 &&
-            a.positionX + a.width > b.positionX &&
-            a.positionX < b.positionX + b.width
-        ) {
-            a.positionY = b.positionY - a.height - 1;
-        }
-
-        if (
-            b.positionY + b.height / 2 < a.positionY &&
-            a.positionY < b.positionY + b.height &&
-            a.positionX + a.width > b.positionX &&
-            a.positionX < b.positionX + b.width
-        ) {
-            a.positionY = b.positionY + b.height + 1;
-        }
-
-        if (
-            b.positionX < a.positionX + a.width &&
-            a.positionX + a.width < b.positionX + b.width / 2 &&
-            a.positionY + a.height > b.positionY &&
-            a.positionY < b.positionY + b.height
-        ) {
-            a.positionX = b.positionX - a.width - 1;
-        }
-
-        if (
-            b.positionX + b.width / 2 < a.positionX &&
-            a.positionX < b.positionX + b.width &&
-            a.positionY + a.height > b.positionY &&
-            a.positionY < b.positionY + b.height
-        ) {
-            a.positionX = b.positionX + b.width + 1;
-        }
-    }
-
-    useCollisionWithWall(player, leftWall, rightWall) {
-        if (player.positionX < leftWall.positionX + leftWall.width) {
-            player.positionX = leftWall.positionX + leftWall.width;
-        }
-
-        if (player.positionX + player.width > rightWall.positionX) {
-            player.positionX = rightWall.positionX - player.width;
-        }
-    }
-
-    useCollisionWithPlayer(a, b) {}
 }
 
 class Player {
@@ -293,60 +208,28 @@ class Player {
         this.speed = 10;
         this.color =
             "rgba(" +
-            randomNumber(150, 255) +
+            randomNumber(50, 200) +
             "," +
-            randomNumber(150, 255) +
+            randomNumber(50, 200) +
             "," +
-            randomNumber(150, 255) +
+            randomNumber(50, 200) +
             "," +
             1 +
             ")";
-    }
-
-    setNickName(nickName) {
-        this.nickName = nickName;
     }
 
     getId() {
         return this.id;
     }
 
-    getNickName() {
-        return this.nickName;
-    }
-
-    getPosition() {
-        return { x: this.positionX, y: this.positionY };
-    }
-
-    goLeft() {
-        this.positionX -= this.speed;
-    }
-
-    goRight() {
-        this.positionX += this.speed;
-    }
-
-    goUp() {
-        this.positionY = lerp(this.positionY, this.positionY + 10, 0.01);
-    }
-}
-
-class Platform {
-    constructor(positionX, positionY, platformWidth, platformHeight) {
+    setPosition (positionX, positionY) {
         this.positionX = positionX;
         this.positionY = positionY;
-        this.width = platformWidth;
-        this.height = platformHeight;
     }
 }
 
 function randomNumber(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-function lerp(start, end, amt) {
-    return (1 - amt) * start + amt * end;
 }
 
 app.use("/covid-19", covid19);
