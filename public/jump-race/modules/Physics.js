@@ -1,9 +1,9 @@
 class Physics {
     constructor() {
-        this.gravity = (WIDTH * 1.5) / 400;
+        this.gravity = (WIDTH * 3) / 400;
         this.friction = 0.9;
         this.velocityX = (WIDTH * 1) / 400;
-        this.jumpPower = (HEIGHT * 30) / 700;
+        this.jumpPower = (HEIGHT * 40) / 700;
     }
 
     usePhysics(player) {
