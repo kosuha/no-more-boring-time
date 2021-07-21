@@ -89,23 +89,15 @@ function setup(nickName) {
         delete players[id];
     });
 
-    window.addEventListener("keydown", function (e) {
-        if (e.code === "ArrowLeft") {
-            players[socket.id].goLeft();
-        }
-
-        if (e.code === "ArrowRight") {
-            players[socket.id].goRight();
-        }
-
-        if (e.code === "ArrowUp") {
-            players[socket.id].goUp();
-        }
-
-        if (e.code === "ArrowDown") {
-            players[socket.id].goDown();
-        }
+    socket.on("updatePosition", (player) => {
+        players[player.id].setPosition(
+            (WIDTH * player.positionX) / 400,
+            (HEIGHT * player.positionY) / 700
+        );
     });
+
+    window.addEventListener("keydown", keyListener);
+    window.addEventListener("keyup", keyListener);
 }
 
 function draw() {
@@ -113,12 +105,9 @@ function draw() {
     ctx.fillStyle = "rgb(255, 255, 255)";
     ctx.fillRect(0, 0, WIDTH, HEIGHT);
 
-    socket.on("updatePosition", (player) => {
-        players[player.id].setPosition((WIDTH * player.positionX) / 400, (HEIGHT * player.positionY) / 700);
-    });
-
     for (let player in players) {
-        physics.useGravity(players[player]);
+        physics.useMove(players[player], players[player].keyInput);
+        physics.usePhysics(players[player]);
         physics.useCollisionWithFloor(players[player], floor);
         physics.useCollisionWithWall(players[player], wallLeft, wallRight);
 
@@ -126,10 +115,32 @@ function draw() {
     }
 
     socket.emit("updatePosition", { room: roomId, player: players[socket.id] });
-    
+
     floor.display();
     wallLeft.display();
     wallRight.display();
+}
+
+function keyListener(e) {
+    let keyState = false;
+
+    if (e.type === "keydown") {
+        keyState = true;
+    } else {
+        keyState = false;
+    }
+
+    switch (e.code) {
+        case "ArrowLeft":
+            players[socket.id].keyInput.left = keyState;
+            break;
+        case "ArrowRight":
+            players[socket.id].keyInput.right = keyState;
+            break;
+        case "ArrowUp":
+            players[socket.id].keyInput.up = keyState;
+            break;
+    }
 }
 
 window.onload = () => {
@@ -140,9 +151,8 @@ window.onload = () => {
 
         nickNameEnterButton.addEventListener("click", () => {
             popup.remove();
-
             setup(nickNameInput.value);
-            setInterval(draw, 1000 / 25);
+            setInterval(draw, 1000 / 30);
         });
     }, 1000);
 };

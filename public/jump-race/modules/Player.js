@@ -12,6 +12,14 @@ class Player {
             x: WIDTH,
             y: HEIGHT
         }
+        this.jumping = false;
+        this.velocityX = 0;
+        this.velocityY = 0;
+        this.keyInput = {
+            left: false,
+            right: false,
+            up: false,
+        };
     }
 
     getId() {
@@ -25,26 +33,6 @@ class Player {
     setPosition (positionX, positionY) {
         this.positionX = positionX; 
         this.positionY = positionY;
-    }
-
-    goLeft() {
-        this.positionX -= this.speed;
-        // this.positionX = this.lerp(this.positionX, this.positionX - this.speed, 0.1);
-    }
-
-    goRight() {
-        this.positionX += this.speed;
-        // this.positionX = this.lerp(this.positionX, this.positionX + this.speed, 0.1);
-    }
-
-    goUp() {
-        this.positionY -= this.speed;
-        // this.positionX = this.lerp(this.positionX, this.positionX + this.speed, 0.1);
-    }
-
-    goDown() {
-        this.positionY += this.speed;
-        // this.positionX = this.lerp(this.positionX, this.positionX + this.speed, 0.1);
     }
 
     display() {
