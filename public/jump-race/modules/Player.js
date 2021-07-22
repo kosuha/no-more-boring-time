@@ -39,7 +39,7 @@ class Player {
     display() {
         ctx.fillStyle = this.color;
 
-        ctx.font = "12px san-serif";
+        ctx.font = (WIDTH * 12) / 400 + "px san-serif";
         ctx.fillText(
             this.nickName,
             this.positionX,

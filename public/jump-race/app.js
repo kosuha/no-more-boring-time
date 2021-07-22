@@ -24,6 +24,12 @@ let roomId;
 let players = {};
 const platform = new Platform();
 const physics = new Physics();
+const button = new Button(
+    (WIDTH * 5) / 400,
+    (HEIGHT * 5) / 700,
+    (WIDTH * 54) / 400,
+    (HEIGHT * 30) / 700
+);
 
 const floor = new Platform(
     (WIDTH * 150) / 400,
@@ -100,6 +106,20 @@ function setup(nickName) {
 
     window.addEventListener("keydown", keyListener);
     window.addEventListener("keyup", keyListener);
+
+    canvas.addEventListener(
+        "click",
+        function (e) {
+            const rect = canvas.getBoundingClientRect();
+            let mousePositionX = e.clientX - rect.left;
+            let mousePositionY = e.clientY - rect.top;
+
+            if (button.isInside(mousePositionX, mousePositionY) === true) {
+                inviteKakao();
+            }
+        },
+        false
+    );
 }
 
 function draw() {
@@ -110,6 +130,7 @@ function draw() {
     floor.display();
     wallLeft.display();
     wallRight.display();
+    button.display();
 
     for (let player in players) {
         physics.useMove(players[player], players[player].keyInput);
@@ -153,8 +174,10 @@ window.onload = () => {
         const popup = document.querySelector("#popup_background");
 
         socket.on("redirect", () => {
-            const roomCheck = confirm('해당하는 방이 없습니다! 새로운 방을 만들까요?');
-            if (roomCheck === true){
+            const roomCheck = confirm(
+                "해당하는 방이 없습니다! 새로운 방을 만들까요?"
+            );
+            if (roomCheck === true) {
                 window.location.href = "./";
             } else {
                 window.close();
