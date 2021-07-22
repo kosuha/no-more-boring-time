@@ -26,17 +26,19 @@ const platform = new Platform();
 const physics = new Physics();
 
 const floor = new Platform(
-    (HEIGHT * 0) / 700,
-    (HEIGHT * 700) / 700,
-    (HEIGHT * 400) / 700,
-    (HEIGHT * 300) / 700
+    (WIDTH * 150) / 400,
+    (HEIGHT * 690) / 700,
+    (WIDTH * 100) / 400,
+    (HEIGHT * 20) / 700
 );
+
 const wallLeft = new Platform(
     (HEIGHT * -20) / 700,
     (HEIGHT * 0) / 700,
     (HEIGHT * 20) / 700,
     (HEIGHT * 700) / 700
 );
+
 const wallRight = new Platform(
     (HEIGHT * 400) / 700,
     (HEIGHT * 0) / 700,
@@ -105,20 +107,21 @@ function draw() {
     ctx.fillStyle = "rgb(255, 255, 255)";
     ctx.fillRect(0, 0, WIDTH, HEIGHT);
 
+    floor.display();
+    wallLeft.display();
+    wallRight.display();
+
     for (let player in players) {
         physics.useMove(players[player], players[player].keyInput);
         physics.usePhysics(players[player]);
         physics.useCollisionWithFloor(players[player], floor);
         physics.useCollisionWithWall(players[player], wallLeft, wallRight);
+        physics.useInfinityFall(players[player]);
 
         players[player].display();
     }
 
     socket.emit("updatePosition", { room: roomId, player: players[socket.id] });
-
-    floor.display();
-    wallLeft.display();
-    wallRight.display();
 }
 
 function keyListener(e) {

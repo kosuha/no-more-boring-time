@@ -20,6 +20,7 @@ class Player {
             right: false,
             up: false,
         };
+        this.laps = 1;
     }
 
     getId() {
@@ -45,7 +46,7 @@ class Player {
             this.positionY - (WIDTH * 10) / 400
         );
 
-        if (this.jumping === true) {
+        if (this.velocityY != 0) {
             ctx.fillRect(
                 this.positionX + (WIDTH * 5) / 400,
                 this.positionY,

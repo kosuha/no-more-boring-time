@@ -7,7 +7,7 @@ class Platform {
     }
 
     display(){
-        ctx.fillStyle = 'black';
-        ctx.fillRect(this.positionX, this.positionY, this.platformWidth, this.platformHeight);
+        ctx.fillStyle = 'rgb(0, 0, 0)';
+        ctx.fillRect(this.positionX, this.positionY, this.width, this.height);
     }
 }

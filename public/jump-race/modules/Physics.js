@@ -15,7 +15,7 @@ class Physics {
     }
 
     useMove(player, keyInput) {
-        if (keyInput.up && player.jumping === false) {
+        if (keyInput.up && player.jumping === false && player.velocityY === 0) {
             player.velocityY -= this.jumpPower;
             player.jumping = true;
         }
@@ -31,6 +31,26 @@ class Physics {
 
     useGravity(player) {
         player.positionY += this.gravity;
+    }
+
+    useInfinityFall(player) {
+        if (player.positionY < -player.height) {
+            player.positionY = (HEIGHT * 700) / 700;
+            if (player.laps === -1) {
+                player.laps += 2;
+            } else {
+                player.laps += 1;
+            }
+            console.log(player.laps);
+        } else if (player.positionY > (HEIGHT * 700) / 700) {
+            player.positionY = -player.height;
+            if (player.laps === 1) {
+                player.laps -= 2;
+            } else {
+                player.laps -= 1;
+            }
+            console.log(player.laps);
+        }
     }
 
     useCollisionWithPlayer(a, b) {}
