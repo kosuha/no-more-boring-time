@@ -27,9 +27,9 @@ const physics = new Physics();
 
 const floor = new Platform(
     (WIDTH * 150) / 400,
-    (HEIGHT * 690) / 700,
+    (HEIGHT * 650) / 700,
     (WIDTH * 100) / 400,
-    (HEIGHT * 20) / 700
+    (HEIGHT * 50) / 700
 );
 
 const wallLeft = new Platform(
