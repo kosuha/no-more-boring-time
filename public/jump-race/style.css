@@ -37,7 +37,7 @@ canvas {
     background-color: rgba(255, 255, 255, 0.6);
     border-radius: 15px;
     padding: 10px;
-    border: 1px solid rgba(0, 0, 0, 0.5)
+    border: 1px solid rgba(0, 0, 0, 0.5);
 }
 
 #popup > div {
@@ -47,4 +47,24 @@ canvas {
 #popup > #popup_title > input {
     height: fit-content;
     font-size: 20px;
+}
+
+#keys {
+    position: fixed;
+    bottom: 0;
+    display: none;
+    justify-content: space-between;
+    width: 100%;
+}
+
+#keys > button {
+    height: 10vh;
+    width: 20%;
+    padding: 10px;
+    margin: 10px;
+    -ms-user-select: none;
+    -moz-user-select: -moz-none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
 }

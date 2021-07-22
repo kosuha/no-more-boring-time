@@ -11,6 +11,8 @@ if (window.innerWidth / window.innerHeight > 400 / 700) {
     height = (window.innerWidth * 700) / 400;
 }
 
+const isMobile = deviceCheck();
+
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
@@ -107,6 +109,27 @@ function setup(nickName) {
     window.addEventListener("keydown", keyListener);
     window.addEventListener("keyup", keyListener);
 
+    if (isMobile === true) {
+        document
+            .querySelector("#up-button")
+            .addEventListener("touchstart" || "click", touchButtonUp);
+        document
+            .querySelector("#left-button")
+            .addEventListener("touchstart" || "click", touchButtonLeft);
+        document
+            .querySelector("#right-button")
+            .addEventListener("touchstart" || "click", touchButtonRight);
+        document
+            .querySelector("#up-button")
+            .addEventListener("touchend" || "click", touchButtonUp);
+        document
+            .querySelector("#left-button")
+            .addEventListener("touchend" || "click", touchButtonLeft);
+        document
+            .querySelector("#right-button")
+            .addEventListener("touchend" || "click", touchButtonRight);
+    }
+
     canvas.addEventListener(
         "click",
         function (e) {
@@ -167,11 +190,68 @@ function keyListener(e) {
     }
 }
 
+function touchButtonLeft(e) {
+    let touchState = false;
+
+    if (e.type === "touchstart") {
+        touchState = true;
+    } else {
+        touchState = false;
+    }
+
+    players[socket.id].keyInput.left = touchState;
+    // console.log('left');
+}
+
+function touchButtonRight(e) {
+    let touchState = false;
+
+    if (e.type === "touchstart") {
+        touchState = true;
+    } else {
+        touchState = false;
+    }
+
+    players[socket.id].keyInput.right = touchState;
+    // console.log('right');
+}
+
+function touchButtonUp(e) {
+    let touchState = false;
+
+    if (e.type === "touchstart") {
+        touchState = true;
+    } else {
+        touchState = false;
+    }
+
+    players[socket.id].keyInput.up = touchState;
+    // console.log('up');
+}
+
+// 접속 기기 체크
+function deviceCheck() {
+    let pc_device = "win16|win32|win64|mac|macintel";
+    let this_device = navigator.platform;
+    if (this_device) {
+        if (pc_device.indexOf(navigator.platform.toLowerCase()) < 0) {
+            return true; //mobile
+        } else {
+            return false; //pc
+        }
+    }
+}
+
 window.onload = () => {
     setTimeout(() => {
         const nickNameInput = document.querySelector("#nickname");
         const nickNameEnterButton = document.querySelector("#nickname_enter");
         const popup = document.querySelector("#popup_background");
+        const mobileKeys = document.querySelector("#keys");
+
+        if (isMobile) {
+            mobileKeys.style.display = "flex";
+        }
 
         socket.on("redirect", () => {
             const roomCheck = confirm(
