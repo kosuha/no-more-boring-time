@@ -111,72 +111,53 @@ io.on("connection", async (socket) => {
             io.to(socket.gameData.joinedRoomId).emit("disconnected", socket.id);
             rooms[socket.gameData.joinedRoomId].popMember(socket.id);
             socket.leave(socket.gameData.joinedRoomId);
-            if (Object.keys(rooms[socket.gameData.joinedRoomId].members).length === 0) {
+            if (
+                Object.keys(rooms[socket.gameData.joinedRoomId].members)
+                    .length === 0
+            ) {
                 delete rooms[socket.gameData.joinedRoomId];
             }
         }
     });
 
-    socket.on("GenerateRoom", (nickName) => {
-        const roomId = socket.id + "_room";
-        console.log("-GenerateRoom-");
-        const roomlink = "http://localhost/jump-race/?room=" + roomId;
-        console.log(roomlink);
-        socket.join(roomId);
+    socket.on("joinRoom", (data) => {
+        if (rooms[data.roomId] === undefined) {
+            rooms[data.roomId] = new Room(data.roomId);
+        }
 
-        let player = new Player(socket.id, nickName);
-        rooms[roomId] = new Room(roomId);
-        rooms[roomId].pushMember(player);
+        console.log(socket.id, "join room: ", data.roomId);
+        socket.join(data.roomId);
 
+        let player = new Player(socket.id, data.nickName);
+        rooms[data.roomId].pushMember(player);
         socket.gameData = {
             player: player,
-            joinedRoomId: roomId,
-            roomData: rooms[roomId],
+            joinedRoomId: data.roomId,
+            roomData: rooms[data.roomId],
         };
-
         io.to(socket.gameData.joinedRoomId).emit(
             "generatePlayer",
             socket.gameData
         );
 
-        console.log(rooms[roomId].getMembers());
-    });
-
-    socket.on("joinRoom", (data) => {
-        if (rooms[data.roomId] === undefined){
-            io.to(socket.id).emit("redirect");
-        } else {
-            console.log(socket.id, "join room: ", data.roomId);
-            socket.join(data.roomId);
-            const playerListInRoom = io.sockets.adapter.rooms.get(data.roomId);
-            console.log(playerListInRoom.size);
-    
-            let player = new Player(socket.id, data.nickName);
-            rooms[data.roomId].pushMember(player);
-            socket.gameData = {
-                player: player,
-                joinedRoomId: data.roomId,
-                roomData: rooms[data.roomId],
-            };
-            io.to(socket.gameData.joinedRoomId).emit(
-                "generatePlayer",
-                socket.gameData
-            );
-    
-            console.log(rooms[data.roomId].getMembers());
-        }
-        
+        console.log(rooms[data.roomId].getMembers());
     });
 
     socket.on("updatePosition", (data) => {
-        const updatePlayer = rooms[data.room].getMembers()[socket.id];
-        const positionX = (data.player.positionX / data.player.canvasSize.x) * 400;
-        const positionY = (data.player.positionY / data.player.canvasSize.y) * 700;
-        updatePlayer.setPosition(positionX, positionY);
+        try {
+            const updatePlayer = rooms[data.room].getMembers()[socket.id];
+            const positionX =
+                (data.player.positionX / data.player.canvasSize.x) * 400;
+            const positionY =
+                (data.player.positionY / data.player.canvasSize.y) * 700;
+            updatePlayer.setPosition(positionX, positionY);
 
-        socket.broadcast.to(data.room).emit("updatePosition", updatePlayer);
+            socket.broadcast.to(data.room).emit("updatePosition", updatePlayer);
+        } catch (error) {
+            io.emit("redirect");
+            console.log("ERROR:updatePosition: ", error);
+        }
     });
-
 });
 
 class Room {
@@ -199,7 +180,6 @@ class Room {
     getMembers() {
         return this.members;
     }
-
 }
 
 class Player {
@@ -209,7 +189,7 @@ class Player {
         this.width = 50;
         this.height = 50;
         this.positionX = 200 - this.width / 2;
-        this.positionY = 650 - this.height / 2;
+        this.positionY = 500 - this.height / 2;
         this.speed = 10;
         this.color =
             "rgba(" +
@@ -227,7 +207,7 @@ class Player {
         return this.id;
     }
 
-    setPosition (positionX, positionY) {
+    setPosition(positionX, positionY) {
         this.positionX = positionX;
         this.positionY = positionY;
     }

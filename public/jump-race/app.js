@@ -64,19 +64,16 @@ function setup(nickName) {
     const urlParams = url.searchParams;
 
     if (urlParams.has("room")) {
-        socket.emit("joinRoom", {
-            roomId: urlParams.get("room"),
-            nickName: nickName,
-        });
         roomId = urlParams.get("room");
+        
     } else {
-        socket.emit("GenerateRoom", nickName);
         roomId = socket.id + "_room";
-        const link =
-            "http://ec2-3-35-14-224.ap-northeast-2.compute.amazonaws.com/jump-race/?room=" +
-            roomId;
-        console.log(link);
     }
+
+    socket.emit("joinRoom", {
+        roomId: roomId,
+        nickName: nickName,
+    });
 
     socket.on("generatePlayer", (gameData) => {
         const members = gameData.roomData.members;
@@ -200,7 +197,6 @@ function touchButtonLeft(e) {
     }
 
     players[socket.id].keyInput.left = touchState;
-    // console.log('left');
 }
 
 function touchButtonRight(e) {
@@ -213,7 +209,6 @@ function touchButtonRight(e) {
     }
 
     players[socket.id].keyInput.right = touchState;
-    // console.log('right');
 }
 
 function touchButtonUp(e) {
@@ -226,7 +221,6 @@ function touchButtonUp(e) {
     }
 
     players[socket.id].keyInput.up = touchState;
-    // console.log('up');
 }
 
 // 접속 기기 체크
@@ -255,19 +249,22 @@ window.onload = () => {
 
         socket.on("redirect", () => {
             const roomCheck = confirm(
-                "해당하는 방이 없습니다! 새로운 방을 만들까요?"
+                "서버 종료"
             );
             if (roomCheck === true) {
-                window.location.href = "./";
+                window.close();
             } else {
                 window.close();
             }
         });
 
         nickNameEnterButton.addEventListener("click", () => {
+            nickNameEnterButton.disabled = true;
             popup.remove();
             setup(nickNameInput.value);
-            setInterval(draw, 1000 / 30);
+            setTimeout(() => {
+                setInterval(draw, 1000 / 30);
+            }, 500);
         });
     }, 1000);
 };
