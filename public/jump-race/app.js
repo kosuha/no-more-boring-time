@@ -65,7 +65,6 @@ function setup(nickName) {
 
     if (urlParams.has("room")) {
         roomId = urlParams.get("room");
-        
     } else {
         roomId = socket.id + "_room";
     }
@@ -76,20 +75,22 @@ function setup(nickName) {
     });
 
     socket.on("generatePlayer", (gameData) => {
-        const members = gameData.roomData.members;
-        for (let member in members) {
-            if (member in players === false) {
-                players[member] = new Player(
-                    member,
-                    members[member].positionX,
-                    members[member].positionY,
-                    members[member].width,
-                    members[member].height,
-                    members[member].color,
-                    members[member].nickName
-                );
+        setTimeout(() => {
+            const members = gameData.roomData.members;
+            for (let member in members) {
+                if (member in players === false) {
+                    players[member] = new Player(
+                        member,
+                        members[member].positionX,
+                        members[member].positionY,
+                        members[member].width,
+                        members[member].height,
+                        members[member].color,
+                        members[member].nickName
+                    );
+                }
             }
-        }
+        }, 1000);
     });
 
     socket.on("disconnected", (id) => {
@@ -248,9 +249,9 @@ window.onload = () => {
         }
 
         socket.on("redirect", () => {
-            const roomCheck = confirm(
-                "서버 종료"
-            );
+            socket.disconnect();
+            const roomCheck = confirm("서버 종료");
+
             if (roomCheck === true) {
                 window.close();
             } else {
@@ -264,7 +265,7 @@ window.onload = () => {
             setup(nickNameInput.value);
             setTimeout(() => {
                 setInterval(draw, 1000 / 30);
-            }, 500);
+            }, 1000);
         });
-    }, 1000);
+    }, 500);
 };

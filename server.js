@@ -154,7 +154,7 @@ io.on("connection", async (socket) => {
 
             socket.broadcast.to(data.room).emit("updatePosition", updatePlayer);
         } catch (error) {
-            io.emit("redirect");
+            io.to(socket.id).emit("redirect");
             console.log("ERROR:updatePosition: ", error);
         }
     });
@@ -199,7 +199,7 @@ class Player {
             "," +
             randomNumber(50, 200) +
             "," +
-            1 +
+            0.7 +
             ")";
     }
 
