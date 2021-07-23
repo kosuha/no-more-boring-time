@@ -32,21 +32,18 @@ const button = new Button(
     (WIDTH * 54) / 400,
     (HEIGHT * 30) / 700
 );
-
 const floor = new Platform(
     (WIDTH * 150) / 400,
     (HEIGHT * 650) / 700,
     (WIDTH * 100) / 400,
     (HEIGHT * 50) / 700
 );
-
 const wallLeft = new Platform(
     (HEIGHT * -20) / 700,
     (HEIGHT * 0) / 700,
     (HEIGHT * 20) / 700,
     (HEIGHT * 700) / 700
 );
-
 const wallRight = new Platform(
     (HEIGHT * 400) / 700,
     (HEIGHT * 0) / 700,
@@ -153,12 +150,23 @@ function draw() {
     wallRight.display();
     button.display();
 
+    let doneList = []; // 플레이어 간 충돌 체크 함수가 중복으로 사용되는 것을 막음.
+
     for (let player in players) {
+        for (let player_ in players) {
+            if (player != player_ && doneList.includes(player_) === false) {
+                physics.useCollisionWithPlayer(players[player], players[player_]);
+            }
+        }
+        doneList.push(player);
+        
         physics.useMove(players[player], players[player].keyInput);
         physics.usePhysics(players[player]);
         physics.useCollisionWithFloor(players[player], floor);
         physics.useCollisionWithWall(players[player], wallLeft, wallRight);
         physics.useInfinityFall(players[player]);
+
+        
 
         players[player].display();
     }

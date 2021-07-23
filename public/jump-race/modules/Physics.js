@@ -53,7 +53,14 @@ class Physics {
         }
     }
 
-    useCollisionWithPlayer(a, b) {}
+    useCollisionWithPlayer(a, b) {
+        const dist = this.distance(a, b);
+        const power = a.width - dist;
+
+        if (this.distance(a, b) < a.width) {
+            console.log(power);
+        }
+    }
 
     useCollisionWithWall(player, leftWall, rightWall) {
         if (player.positionX < leftWall.positionX + leftWall.width) {
@@ -105,5 +112,11 @@ class Physics {
         // ) {
         //     player.positionX = floor.positionX + floor.width + 1;
         // }
+    }
+
+    distance(a, b) {
+        const x = a.positionX - b.positionX;
+        const y = a.positionY - b.positionY;
+        return Math.sqrt((x * x) + (y * y));
     }
 }
