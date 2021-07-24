@@ -20,7 +20,7 @@ class Player {
             right: false,
             up: false,
         };
-        this.laps = 1;
+        this.score = 0;
     }
 
     getId() {

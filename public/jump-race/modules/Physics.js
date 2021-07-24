@@ -1,9 +1,9 @@
 class Physics {
     constructor() {
         this.gravity = (WIDTH * 3) / 400;
-        this.friction = 0.9;
+        this.friction = 0.85;
         this.velocityX = (WIDTH * 1) / 400;
-        this.jumpPower = (HEIGHT * 40) / 700;
+        this.jumpPower = (HEIGHT * 50) / 700;
     }
 
     usePhysics(player) {
@@ -12,6 +12,14 @@ class Physics {
         player.positionY += player.velocityY;
         player.velocityX *= this.friction; // friction
         player.velocityY *= this.friction;
+    }
+
+    useScore(player, flag) {
+        const dist = this.distance(player, flag);
+        if (dist < player.width / 2) {
+            player.score += 1;
+            console.log(player.nickName, player.score);
+        }
     }
 
     useMove(player, keyInput) {
@@ -36,20 +44,8 @@ class Physics {
     useInfinityFall(player) {
         if (player.positionY < -player.height) {
             player.positionY = (HEIGHT * 700) / 700;
-            if (player.laps === -1) {
-                player.laps += 2;
-            } else {
-                player.laps += 1;
-            }
-            console.log(player.laps);
         } else if (player.positionY > (HEIGHT * 700) / 700) {
             player.positionY = -player.height;
-            if (player.laps === 1) {
-                player.laps -= 2;
-            } else {
-                player.laps -= 1;
-            }
-            console.log(player.laps);
         }
     }
 
@@ -58,7 +54,21 @@ class Physics {
         const power = a.width - dist;
 
         if (this.distance(a, b) < a.width) {
-            console.log(power);
+            if (a.positionX > b.positionX) {
+                a.velocityX += (HEIGHT * power * 2) / 700;
+                b.velocityX -= (HEIGHT * power * 2) / 700;
+            } else if (a.positionX < b.positionX) {
+                a.velocityX -= (HEIGHT * power * 2) / 700;
+                b.velocityX += (HEIGHT * power * 2) / 700;
+            }
+
+            if (a.positionY < b.positionY) {
+                a.velocityY -= (HEIGHT * power * 2) / 700;
+                b.velocityY += (HEIGHT * power * 2) / 700;
+            } else if (a.positionY > b.positionY) {
+                a.velocityY += (HEIGHT * power * 2) / 700;
+                b.velocityY -= (HEIGHT * power * 2) / 700;
+            }
         }
     }
 
@@ -75,10 +85,10 @@ class Physics {
     useCollisionWithFloor(player, floor) {
         if (
             floor.positionY < player.positionY + player.height &&
-            player.positionY + player.height <
-                floor.positionY + floor.height / 2 &&
+            player.positionY + player.height < floor.positionY + floor.height / 2 &&
             player.positionX + player.width > floor.positionX &&
-            player.positionX < floor.positionX + floor.width
+            player.positionX < floor.positionX + floor.width &&
+            player.velocityY >= 0
         ) {
             player.positionY = floor.positionY - player.height - 1;
             player.jumping = false;

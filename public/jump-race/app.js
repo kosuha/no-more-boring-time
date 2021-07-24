@@ -24,8 +24,9 @@ const HEIGHT = canvas.height;
 
 let roomId;
 let players = {};
-const platform = new Platform();
+
 const physics = new Physics();
+const rank = new Rank((WIDTH * 5) / 400, (HEIGHT * 40) / 700, players);
 const button = new Button(
     (WIDTH * 5) / 400,
     (HEIGHT * 5) / 700,
@@ -33,23 +34,49 @@ const button = new Button(
     (HEIGHT * 30) / 700
 );
 const floor = new Platform(
-    (WIDTH * 150) / 400,
-    (HEIGHT * 650) / 700,
-    (WIDTH * 100) / 400,
+    (WIDTH * 200) / 400,
+    (HEIGHT * 670) / 700,
+    (WIDTH * 200) / 400,
     (HEIGHT * 50) / 700
 );
-const wallLeft = new Platform(
+const wallLeft = new Wall(
     (HEIGHT * -20) / 700,
     (HEIGHT * 0) / 700,
     (HEIGHT * 20) / 700,
     (HEIGHT * 700) / 700
 );
-const wallRight = new Platform(
+const wallRight = new Wall(
     (HEIGHT * 400) / 700,
     (HEIGHT * 0) / 700,
     (HEIGHT * 20) / 700,
     (HEIGHT * 700) / 700
 );
+const floor2 = new Platform(
+    (WIDTH * 0) / 400,
+    (HEIGHT * 350) / 700,
+    (WIDTH * 200) / 400,
+    (HEIGHT * 50) / 700
+);
+const floor3 = new Platform(
+    (WIDTH * 200) / 400,
+    (HEIGHT * 450) / 700,
+    (WIDTH * 100) / 400,
+    (HEIGHT * 50) / 700
+);
+const floor4 = new Platform(
+    (WIDTH * 300) / 400,
+    (HEIGHT * 250) / 700,
+    (WIDTH * 30) / 400,
+    (HEIGHT * 50) / 700
+);
+const floor5 = new Platform(
+    (WIDTH * 0) / 400,
+    (HEIGHT * 600) / 700,
+    (WIDTH * 150) / 400,
+    (HEIGHT * 50) / 700
+);
+
+const flag = new Flag((WIDTH * 290) / 400, (HEIGHT * 200) / 700);
 
 function setup(nickName) {
     ctx.clearRect(0, 0, WIDTH, HEIGHT);
@@ -101,6 +128,10 @@ function setup(nickName) {
         );
     });
 
+    socket.on("rank", (rankList) => {
+        rank.setRankList(rankList);
+    });
+
     window.addEventListener("keydown", keyListener);
     window.addEventListener("keyup", keyListener);
 
@@ -150,27 +181,44 @@ function draw() {
     wallRight.display();
     button.display();
 
+    floor2.display();
+    floor3.display();
+    floor4.display();
+    floor5.display();
+
+    flag.display();
+
     let doneList = []; // 플레이어 간 충돌 체크 함수가 중복으로 사용되는 것을 막음.
 
     for (let player in players) {
         for (let player_ in players) {
             if (player != player_ && doneList.includes(player_) === false) {
-                physics.useCollisionWithPlayer(players[player], players[player_]);
+                physics.useCollisionWithPlayer(
+                    players[player],
+                    players[player_]
+                );
             }
         }
         doneList.push(player);
-        
+
         physics.useMove(players[player], players[player].keyInput);
         physics.usePhysics(players[player]);
         physics.useCollisionWithFloor(players[player], floor);
         physics.useCollisionWithWall(players[player], wallLeft, wallRight);
         physics.useInfinityFall(players[player]);
 
-        
+        physics.useCollisionWithFloor(players[player], floor2);
+        physics.useCollisionWithFloor(players[player], floor3);
+        physics.useCollisionWithFloor(players[player], floor4);
+        physics.useCollisionWithFloor(players[player], floor5);
+
+        physics.useScore(players[player], flag);
 
         players[player].display();
     }
 
+    socket.emit("rank", players);
+    rank.display(players);
     socket.emit("updatePosition", { room: roomId, player: players[socket.id] });
 }
 

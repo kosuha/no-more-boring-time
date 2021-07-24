@@ -158,6 +158,13 @@ io.on("connection", async (socket) => {
             console.log("ERROR:updatePosition: ", error);
         }
     });
+
+    const rank = new Rank();
+    socket.on("rank", (players) => {
+        rank.pushScore(players);
+        const result = rank.totalRank();
+        io.to(socket.gameData.joinedRoomId).emit("rank", result);
+    });
 });
 
 class Room {
@@ -210,6 +217,26 @@ class Player {
     setPosition(positionX, positionY) {
         this.positionX = positionX;
         this.positionY = positionY;
+    }
+}
+
+class Rank {
+    constructor() {
+        this.rankList = [];
+    }
+
+    pushScore(players) {
+        for (let player in players) {
+            this.rankList.push(players[player]);
+        }
+    }
+
+    totalRank(){
+        const result = this.rankList.sort(function (a, b) {
+            return b.score - a.score;
+        });
+        this.rankList = [];
+        return result;
     }
 }
 
