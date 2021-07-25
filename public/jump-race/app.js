@@ -114,7 +114,7 @@ function setup(nickName) {
                     );
                 }
             }
-        }, 1000);
+        }, 3000);
     });
 
     socket.on("disconnected", (id) => {
@@ -299,6 +299,7 @@ window.onload = () => {
         const nickNameEnterButton = document.querySelector("#nickname_enter");
         const popup = document.querySelector("#popup_background");
         const mobileKeys = document.querySelector("#keys");
+        const loading = document.querySelector("#loading_background");
 
         if (isMobile) {
             mobileKeys.style.display = "flex";
@@ -317,11 +318,14 @@ window.onload = () => {
 
         nickNameEnterButton.addEventListener("click", () => {
             nickNameEnterButton.disabled = true;
+            loading.style.display = 'flex';
             popup.remove();
             setup(nickNameInput.value);
+            console.log("loading...");
             setTimeout(() => {
+                loading.style.display = 'none';
                 setInterval(draw, 1000 / 30);
-            }, 1000);
+            }, 3000);
         });
     }, 500);
 };

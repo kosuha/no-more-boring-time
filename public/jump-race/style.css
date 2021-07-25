@@ -76,3 +76,15 @@ canvas {
     border: 1px solid rgb(168, 168, 168);
     background-color: rgba(224, 224, 224, 0.5);
 }
+
+#loading_background {
+    position: fixed;
+    margin: 0;
+    width: 100vw;
+    height: 100vh;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    align-content: center;
+    justify-content: center;
+}
