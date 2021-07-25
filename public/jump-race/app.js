@@ -121,11 +121,12 @@ function setup(nickName) {
         delete players[id];
     });
 
-    socket.on("updatePosition", (player) => {
-        players[player.id].setPosition(
-            (WIDTH * player.positionX) / 400,
-            (HEIGHT * player.positionY) / 700
+    socket.on("updatePosition", (data) => {
+        players[data.player.id].setPosition(
+            (WIDTH * data.player.positionX) / 400,
+            (HEIGHT * data.player.positionY) / 700
         );
+        flag.setPosition(data.flag.positionX, data.flag.positionY);
     });
 
     socket.on("rank", (rankList) => {
@@ -186,8 +187,6 @@ function draw() {
     floor4.display();
     floor5.display();
 
-    flag.display();
-
     let doneList = []; // 플레이어 간 충돌 체크 함수가 중복으로 사용되는 것을 막음.
 
     for (let player in players) {
@@ -195,11 +194,14 @@ function draw() {
             if (player != player_ && doneList.includes(player_) === false) {
                 physics.useCollisionWithPlayer(
                     players[player],
-                    players[player_]
+                    players[player_],
+                    flag
                 );
             }
         }
         doneList.push(player);
+
+        flag.take(players[player]);
 
         physics.useMove(players[player], players[player].keyInput);
         physics.usePhysics(players[player]);
@@ -217,9 +219,25 @@ function draw() {
         players[player].display();
     }
 
+    flag.display();
+
+    physics.usePhysics(flag);
+    physics.useInfinityFall(flag);
+    physics.useCollisionWithFloor(flag, floor);
+    physics.useCollisionWithFloor(flag, floor2);
+    physics.useCollisionWithFloor(flag, floor3);
+    physics.useCollisionWithFloor(flag, floor4);
+    physics.useCollisionWithFloor(flag, floor5);
+
+
+
     socket.emit("rank", players);
     rank.display(players);
-    socket.emit("updatePosition", { room: roomId, player: players[socket.id] });
+    socket.emit("updatePosition", {
+        room: roomId,
+        player: players[socket.id],
+        flag: flag
+    });
 }
 
 function keyListener(e) {
@@ -318,12 +336,12 @@ window.onload = () => {
 
         nickNameEnterButton.addEventListener("click", () => {
             nickNameEnterButton.disabled = true;
-            loading.style.display = 'flex';
+            loading.style.display = "flex";
             popup.remove();
             setup(nickNameInput.value);
             console.log("loading...");
             setTimeout(() => {
-                loading.style.display = 'none';
+                loading.style.display = "none";
                 setInterval(draw, 1000 / 30);
             }, 3000);
         });

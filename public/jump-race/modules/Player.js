@@ -21,6 +21,7 @@ class Player {
             up: false,
         };
         this.score = 0;
+        this.getFlag = false;
     }
 
     getId() {

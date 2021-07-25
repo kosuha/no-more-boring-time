@@ -120,6 +120,7 @@ io.on("connection", async (socket) => {
         }
     });
 
+    const flag = new Flag();
     socket.on("joinRoom", (data) => {
         if (rooms[data.roomId] === undefined) {
             rooms[data.roomId] = new Room(data.roomId);
@@ -143,8 +144,11 @@ io.on("connection", async (socket) => {
         console.log(rooms[data.roomId].getMembers());
     });
 
+    
     socket.on("updatePosition", (data) => {
         try {
+            flag.setPosition(data.flag.positionX, data.flag.positionY);
+
             const updatePlayer = rooms[data.room].getMembers()[socket.id];
             const positionX =
                 (data.player.positionX / data.player.canvasSize.x) * 400;
@@ -152,7 +156,7 @@ io.on("connection", async (socket) => {
                 (data.player.positionY / data.player.canvasSize.y) * 700;
             updatePlayer.setPosition(positionX, positionY);
 
-            socket.broadcast.to(data.room).emit("updatePosition", updatePlayer);
+            socket.broadcast.to(data.room).emit("updatePosition", { player: updatePlayer, flag: flag });
         } catch (error) {
             io.to(socket.id).emit("redirect");
             console.log("ERROR:updatePosition: ", error);
@@ -212,6 +216,18 @@ class Player {
 
     getId() {
         return this.id;
+    }
+
+    setPosition(positionX, positionY) {
+        this.positionX = positionX;
+        this.positionY = positionY;
+    }
+}
+
+class Flag {
+    constructor () {
+        this.positionX = 290;
+        this.positionY = 200;
     }
 
     setPosition(positionX, positionY) {

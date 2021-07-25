@@ -14,14 +14,6 @@ class Physics {
         player.velocityY *= this.friction;
     }
 
-    useScore(player, flag) {
-        const dist = this.distance(player, flag);
-        if (dist < player.width / 2) {
-            player.score += 1;
-            console.log(player.nickName, player.score);
-        }
-    }
-
     useMove(player, keyInput) {
         if (keyInput.up && player.jumping === false && player.velocityY === 0) {
             player.velocityY -= this.jumpPower;
@@ -49,7 +41,7 @@ class Physics {
         }
     }
 
-    useCollisionWithPlayer(a, b) {
+    useCollisionWithPlayer(a, b, flag) {
         const dist = this.distance(a, b);
         const power = a.width - dist;
 
@@ -69,6 +61,24 @@ class Physics {
                 a.velocityY += (HEIGHT * power * 2) / 700;
                 b.velocityY -= (HEIGHT * power * 2) / 700;
             }
+
+            a.getFlag = false;
+            b.getFlag = false;
+            flag.drop();
+
+        }
+    }
+
+    useScore(player, flag) {
+        const dist = this.distance(player, flag);
+
+        if (dist < player.width / 2 && player.getFlag === false && flag.taken == false && flag.velocityY >= 0) {
+            player.getFlag = true;
+            flag.taken = true;
+        }
+
+        if (player.getFlag === true) {
+            player.score += 1;
         }
     }
 
@@ -94,34 +104,6 @@ class Physics {
             player.jumping = false;
             player.velocityY = 0;
         }
-
-        // if (
-        //     floor.positionY + floor.height / 2 < player.positionY &&
-        //     player.positionY < floor.positionY + floor.height &&
-        //     player.positionX + player.width > floor.positionX &&
-        //     player.positionX < floor.positionX + floor.width
-        // ) {
-        //     player.positionY = floor.positionY + floor.height + 1;
-        // }
-
-        // if (
-        //     floor.positionX < player.positionX + player.width &&
-        //     player.positionX + player.width <
-        //         floor.positionX + floor.width / 2 &&
-        //     player.positionY + player.height > floor.positionY &&
-        //     player.positionY < floor.positionY + floor.height
-        // ) {
-        //     player.positionX = floor.positionX - player.width - 1;
-        // }
-
-        // if (
-        //     floor.positionX + floor.width / 2 < player.positionX &&
-        //     player.positionX < floor.positionX + floor.width &&
-        //     player.positionY + player.height > floor.positionY &&
-        //     player.positionY < floor.positionY + floor.height
-        // ) {
-        //     player.positionX = floor.positionX + floor.width + 1;
-        // }
     }
 
     distance(a, b) {
