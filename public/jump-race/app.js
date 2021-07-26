@@ -79,27 +79,81 @@ const floor5 = new Platform(
 const flag = new Flag((WIDTH * 290) / 400, (HEIGHT * 200) / 700);
 
 function setup(nickName) {
-    ctx.clearRect(0, 0, WIDTH, HEIGHT);
+    return new Promise((resolve, reject) => {
+        ctx.clearRect(0, 0, WIDTH, HEIGHT);
 
-    ctx.fillStyle = "rgb(255, 255, 255)";
-    ctx.fillRect(0, 0, WIDTH, HEIGHT);
+        ctx.fillStyle = "rgb(255, 255, 255)";
+        ctx.fillRect(0, 0, WIDTH, HEIGHT);
 
-    const url = new URL(window.location.href);
-    const urlParams = url.searchParams;
+        const url = new URL(window.location.href);
+        const urlParams = url.searchParams;
 
-    if (urlParams.has("room")) {
-        roomId = urlParams.get("room");
-    } else {
-        roomId = socket.id + "_room";
-    }
+        if (urlParams.has("room")) {
+            roomId = urlParams.get("room");
+        } else {
+            roomId = socket.id + "_room";
+        }
 
-    socket.emit("joinRoom", {
-        roomId: roomId,
-        nickName: nickName,
-    });
+        socket.emit("joinRoom", {
+            roomId: roomId,
+            nickName: nickName,
+        });
 
-    socket.on("generatePlayer", (gameData) => {
-        setTimeout(() => {
+        socket.on("disconnected", (id) => {
+            delete players[id];
+        });
+
+        socket.on("updatePosition", (data) => {
+            players[data.player.id].setPosition(
+                (WIDTH * data.player.positionX) / 400,
+                (HEIGHT * data.player.positionY) / 700
+            );
+            flag.setPosition(data.flag.positionX, data.flag.positionY);
+        });
+
+        socket.on("rank", (rankList) => {
+            rank.setRankList(rankList);
+        });
+
+        window.addEventListener("keydown", keyListener);
+        window.addEventListener("keyup", keyListener);
+
+        if (isMobile === true) {
+            document
+                .querySelector("#up-button")
+                .addEventListener("touchstart" || "click", touchButtonUp);
+            document
+                .querySelector("#left-button")
+                .addEventListener("touchstart" || "click", touchButtonLeft);
+            document
+                .querySelector("#right-button")
+                .addEventListener("touchstart" || "click", touchButtonRight);
+            document
+                .querySelector("#up-button")
+                .addEventListener("touchend" || "click", touchButtonUp);
+            document
+                .querySelector("#left-button")
+                .addEventListener("touchend" || "click", touchButtonLeft);
+            document
+                .querySelector("#right-button")
+                .addEventListener("touchend" || "click", touchButtonRight);
+        }
+
+        canvas.addEventListener(
+            "click",
+            function (e) {
+                const rect = canvas.getBoundingClientRect();
+                let mousePositionX = e.clientX - rect.left;
+                let mousePositionY = e.clientY - rect.top;
+
+                if (button.isInside(mousePositionX, mousePositionY) === true) {
+                    inviteKakao();
+                }
+            },
+            false
+        );
+
+        socket.on("generatePlayer", (gameData) => {
             const members = gameData.roomData.members;
             for (let member in members) {
                 if (member in players === false) {
@@ -114,62 +168,9 @@ function setup(nickName) {
                     );
                 }
             }
-        }, 3000);
+            resolve(players[socket.id]);
+        });
     });
-
-    socket.on("disconnected", (id) => {
-        delete players[id];
-    });
-
-    socket.on("updatePosition", (data) => {
-        players[data.player.id].setPosition(
-            (WIDTH * data.player.positionX) / 400,
-            (HEIGHT * data.player.positionY) / 700
-        );
-        flag.setPosition(data.flag.positionX, data.flag.positionY);
-    });
-
-    socket.on("rank", (rankList) => {
-        rank.setRankList(rankList);
-    });
-
-    window.addEventListener("keydown", keyListener);
-    window.addEventListener("keyup", keyListener);
-
-    if (isMobile === true) {
-        document
-            .querySelector("#up-button")
-            .addEventListener("touchstart" || "click", touchButtonUp);
-        document
-            .querySelector("#left-button")
-            .addEventListener("touchstart" || "click", touchButtonLeft);
-        document
-            .querySelector("#right-button")
-            .addEventListener("touchstart" || "click", touchButtonRight);
-        document
-            .querySelector("#up-button")
-            .addEventListener("touchend" || "click", touchButtonUp);
-        document
-            .querySelector("#left-button")
-            .addEventListener("touchend" || "click", touchButtonLeft);
-        document
-            .querySelector("#right-button")
-            .addEventListener("touchend" || "click", touchButtonRight);
-    }
-
-    canvas.addEventListener(
-        "click",
-        function (e) {
-            const rect = canvas.getBoundingClientRect();
-            let mousePositionX = e.clientX - rect.left;
-            let mousePositionY = e.clientY - rect.top;
-
-            if (button.isInside(mousePositionX, mousePositionY) === true) {
-                inviteKakao();
-            }
-        },
-        false
-    );
 }
 
 function draw() {
@@ -229,14 +230,12 @@ function draw() {
     physics.useCollisionWithFloor(flag, floor4);
     physics.useCollisionWithFloor(flag, floor5);
 
-
-
     socket.emit("rank", players);
     rank.display(players);
     socket.emit("updatePosition", {
         room: roomId,
         player: players[socket.id],
-        flag: flag
+        flag: flag,
     });
 }
 
@@ -312,38 +311,46 @@ function deviceCheck() {
 }
 
 window.onload = () => {
-    setTimeout(() => {
-        const nickNameInput = document.querySelector("#nickname");
-        const nickNameEnterButton = document.querySelector("#nickname_enter");
-        const popup = document.querySelector("#popup_background");
-        const mobileKeys = document.querySelector("#keys");
-        const loading = document.querySelector("#loading_background");
+    const nickNameInput = document.querySelector("#nickname");
+    const nickNameEnterButton = document.querySelector("#nickname_enter");
+    const popup = document.querySelector("#popup_background");
+    const mobileKeys = document.querySelector("#keys");
+    const loading = document.querySelector("#loading_background");
 
-        if (isMobile) {
-            mobileKeys.style.display = "flex";
+    if (isMobile) {
+        mobileKeys.style.display = "flex";
+    }
+
+    socket.on("redirect", () => {
+        socket.disconnect();
+        const roomCheck = confirm("서버 종료");
+
+        if (roomCheck === true) {
+            window.close();
+        } else {
+            window.close();
         }
+    });
 
-        socket.on("redirect", () => {
-            socket.disconnect();
-            const roomCheck = confirm("서버 종료");
-
-            if (roomCheck === true) {
-                window.close();
-            } else {
-                window.close();
-            }
-        });
-
-        nickNameEnterButton.addEventListener("click", () => {
-            nickNameEnterButton.disabled = true;
-            loading.style.display = "flex";
-            popup.remove();
-            setup(nickNameInput.value);
-            console.log("loading...");
-            setTimeout(() => {
+    nickNameEnterButton.addEventListener("click", () => {
+        nickNameEnterButton.disabled = true;
+        loading.style.display = "flex";
+        popup.remove();
+        setup(nickNameInput.value)
+            .then((socketPlayer) => {
+                console.log(socketPlayer);
                 loading.style.display = "none";
                 setInterval(draw, 1000 / 30);
-            }, 3000);
-        });
-    }, 500);
+            })
+            .catch((error) => {
+                socket.disconnect();
+                const roomCheck = confirm(error);
+
+                if (roomCheck === true) {
+                    window.close();
+                } else {
+                    window.close();
+                }
+            });
+    });
 };
