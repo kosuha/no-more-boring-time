@@ -46,6 +46,10 @@ class Physics {
         const power = a.width - dist;
 
         if (this.distance(a, b) < a.width) {
+            a.getFlag = false;
+            b.getFlag = false;
+            flag.drop();
+
             if (a.positionX > b.positionX) {
                 a.velocityX += (HEIGHT * power * 2) / 700;
                 b.velocityX -= (HEIGHT * power * 2) / 700;
@@ -61,18 +65,13 @@ class Physics {
                 a.velocityY += (HEIGHT * power * 2) / 700;
                 b.velocityY -= (HEIGHT * power * 2) / 700;
             }
-
-            a.getFlag = false;
-            b.getFlag = false;
-            flag.drop();
-
         }
     }
 
     useScore(player, flag) {
         const dist = this.distance(player, flag);
 
-        if (dist < player.width / 2 && player.getFlag === false && flag.taken == false && flag.velocityY >= 0) {
+        if (dist < player.width / 2 && player.getFlag === false && flag.taken == false && flag.velocityY === 0) {
             player.getFlag = true;
             flag.taken = true;
         }

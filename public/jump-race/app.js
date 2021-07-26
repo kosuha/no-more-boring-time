@@ -38,7 +38,7 @@ const floor = new Platform(
     (WIDTH * 200) / 400,
     (HEIGHT * 670) / 700,
     (WIDTH * 200) / 400,
-    (HEIGHT * 50) / 700
+    (HEIGHT * 40) / 700
 );
 const wallLeft = new Wall(
     (HEIGHT * -20) / 700,
@@ -56,25 +56,25 @@ const floor2 = new Platform(
     (WIDTH * 0) / 400,
     (HEIGHT * 350) / 700,
     (WIDTH * 200) / 400,
-    (HEIGHT * 50) / 700
+    (HEIGHT * 40) / 700
 );
 const floor3 = new Platform(
     (WIDTH * 200) / 400,
     (HEIGHT * 450) / 700,
     (WIDTH * 100) / 400,
-    (HEIGHT * 50) / 700
+    (HEIGHT * 40) / 700
 );
 const floor4 = new Platform(
     (WIDTH * 300) / 400,
     (HEIGHT * 250) / 700,
     (WIDTH * 30) / 400,
-    (HEIGHT * 50) / 700
+    (HEIGHT * 40) / 700
 );
 const floor5 = new Platform(
     (WIDTH * 0) / 400,
     (HEIGHT * 600) / 700,
     (WIDTH * 150) / 400,
-    (HEIGHT * 50) / 700
+    (HEIGHT * 40) / 700
 );
 
 function setup(nickName) {
@@ -106,9 +106,10 @@ function setup(nickName) {
         });
 
         socket.on("updatePosition", (data) => {
-            players[data.player.id].setPosition(
+            players[data.player.id].setState(
                 (WIDTH * data.player.positionX) / 400,
-                (HEIGHT * data.player.positionY) / 700
+                (HEIGHT * data.player.positionY) / 700,
+                data.player.getFlag
             );
             flag.setState(
                 (WIDTH * data.flag.positionX) / 400,
@@ -219,6 +220,7 @@ function draw() {
 
         physics.useMove(players[player], players[player].keyInput);
         physics.usePhysics(players[player]);
+        physics.useScore(players[player], flag);
         physics.useCollisionWithFloor(players[player], floor);
         physics.useCollisionWithWall(players[player], wallLeft, wallRight);
         physics.useInfinityFall(players[player]);
@@ -228,11 +230,10 @@ function draw() {
         physics.useCollisionWithFloor(players[player], floor4);
         physics.useCollisionWithFloor(players[player], floor5);
 
-        physics.useScore(players[player], flag);
-
         players[player].display();
     }
 
+    flag.dropCheck(players);
     flag.display();
 
     physics.usePhysics(flag);

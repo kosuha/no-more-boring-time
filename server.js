@@ -119,7 +119,6 @@ io.on("connection", async (socket) => {
             }
         }
     });
-
     
     socket.on("joinRoom", (data) => {
         if (rooms[data.roomId] === undefined) {
@@ -161,7 +160,7 @@ io.on("connection", async (socket) => {
                 (data.player.positionX / data.player.canvasSize.x) * 400;
             const positionY =
                 (data.player.positionY / data.player.canvasSize.y) * 700;
-            updatePlayer.setPosition(positionX, positionY);
+            updatePlayer.setState(positionX, positionY, data.player.getFlag);
 
             socket.broadcast.to(data.room).emit("updatePosition", { player: updatePlayer, flag: rooms[data.room].flag });
         } catch (error) {
@@ -172,9 +171,14 @@ io.on("connection", async (socket) => {
 
     const rank = new Rank();
     socket.on("rank", (players) => {
-        rank.pushScore(players);
-        const result = rank.totalRank();
-        io.to(socket.gameData.joinedRoomId).emit("rank", result);
+        try {
+            rank.pushScore(players);
+            const result = rank.totalRank();
+            io.to(socket.gameData.joinedRoomId).emit("rank", result);
+        } catch (error) {
+            io.to(socket.id).emit("redirect");
+            console.log("ERROR:rank: ", error);
+        }
     });
 });
 
@@ -210,6 +214,7 @@ class Player {
         this.positionX = 200 - this.width / 2;
         this.positionY = 500 - this.height / 2;
         this.speed = 10;
+        this.getFlag = false;
         this.color =
             "rgba(" +
             randomNumber(50, 200) +
@@ -226,9 +231,10 @@ class Player {
         return this.id;
     }
 
-    setPosition(positionX, positionY) {
+    setState(positionX, positionY, getFlag) {
         this.positionX = positionX;
         this.positionY = positionY;
+        this.getFlag = getFlag;
     }
 }
 

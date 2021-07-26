@@ -32,14 +32,16 @@ class Player {
         return this.nickName;
     }
 
-    setPosition(positionX, positionY) {
+    setState(positionX, positionY, getFlag) {
         this.positionX = positionX;
         this.positionY = positionY;
+        this.getFlag = getFlag;
     }
 
     display() {
         ctx.fillStyle = this.color;
 
+        // 닉네임
         ctx.font = (WIDTH * 12) / 400 + "px san-serif";
         ctx.fillText(
             this.nickName,
@@ -48,6 +50,8 @@ class Player {
         );
 
         if (this.velocityY != 0) {
+            // 지면에서 떨어져 있을 때
+            // 몸통
             ctx.fillRect(
                 this.positionX + (WIDTH * 5) / 400,
                 this.positionY,
@@ -55,6 +59,7 @@ class Player {
                 this.height + (WIDTH * 10) / 400
             );
 
+            // 왼쪽 눈
             ctx.lineWidth = (WIDTH * 2) / 400;
             ctx.strokeStyle = "black";
             ctx.beginPath();
@@ -72,6 +77,7 @@ class Player {
             );
             ctx.stroke();
 
+            // 오른쪽 눈
             ctx.beginPath();
             ctx.moveTo(
                 this.positionX + (WIDTH * (50 - 5)) / 400,
@@ -87,6 +93,7 @@ class Player {
             );
             ctx.stroke();
         } else {
+            // 지면을 밟고 있을 때
             ctx.fillRect(
                 this.positionX,
                 this.positionY,
@@ -94,6 +101,7 @@ class Player {
                 this.height
             );
 
+            // 왼쪽, 오른쪽 눈
             ctx.fillStyle = "white";
             ctx.fillRect(
                 this.positionX + (WIDTH * 5) / 400,
@@ -108,49 +116,37 @@ class Player {
                 (WIDTH * 15) / 400
             );
 
-            if (this.velocityX < 0) {
-                ctx.fillStyle = "black";
-                ctx.fillRect(
-                    this.positionX + (WIDTH * 33 - 3) / 400,
-                    this.positionY + (WIDTH * 15) / 400,
-                    (WIDTH * 8) / 400,
-                    (WIDTH * 8) / 400
-                );
-                ctx.fillRect(
-                    this.positionX + (WIDTH * 8 - 3) / 400,
-                    this.positionY + (WIDTH * 15) / 400,
-                    (WIDTH * 8) / 400,
-                    (WIDTH * 8) / 400
-                );
-            } else if (this.velocityX > 0) {
-                ctx.fillStyle = "black";
-                ctx.fillRect(
-                    this.positionX + (WIDTH * 33 + 3) / 400,
-                    this.positionY + (WIDTH * 15) / 400,
-                    (WIDTH * 8) / 400,
-                    (WIDTH * 8) / 400
-                );
-                ctx.fillRect(
-                    this.positionX + (WIDTH * 8 + 3) / 400,
-                    this.positionY + (WIDTH * 15) / 400,
-                    (WIDTH * 8) / 400,
-                    (WIDTH * 8) / 400
-                );
-            } else {
-                ctx.fillStyle = "black";
-                ctx.fillRect(
-                    this.positionX + (WIDTH * 33) / 400,
-                    this.positionY + (WIDTH * 15) / 400,
-                    (WIDTH * 8) / 400,
-                    (WIDTH * 8) / 400
-                );
-                ctx.fillRect(
-                    this.positionX + (WIDTH * 8) / 400,
-                    this.positionY + (WIDTH * 15) / 400,
-                    (WIDTH * 8) / 400,
-                    (WIDTH * 8) / 400
-                );
-            }
+            ctx.fillStyle = "black";
+            ctx.fillRect(
+                this.positionX + (WIDTH * 33) / 400,
+                this.positionY + (WIDTH * 15) / 400,
+                (WIDTH * 8) / 400,
+                (WIDTH * 8) / 400
+            );
+            ctx.fillRect(
+                this.positionX + (WIDTH * 8) / 400,
+                this.positionY + (WIDTH * 15) / 400,
+                (WIDTH * 8) / 400,
+                (WIDTH * 8) / 400
+            );
+        }
+
+        //깃발
+        if (this.getFlag === true) {
+            ctx.fillStyle = "rgb(100, 100, 100)";
+            ctx.fillRect(
+                this.positionX + (WIDTH * 25.5) / 400,
+                this.positionY - (HEIGHT * 25) / 700,
+                (WIDTH * 2) / 400,
+                (HEIGHT * 28) / 700
+            );
+            ctx.fillStyle = "rgb(255, 0, 0)";
+            ctx.fillRect(
+                this.positionX + (WIDTH * 27.5) / 400,
+                this.positionY - (HEIGHT * 24) / 700,
+                (WIDTH * 16) / 400,
+                (HEIGHT * 12) / 700
+            );
         }
     }
 

@@ -29,21 +29,6 @@ class Flag {
                 (WIDTH * 40) / 400,
                 (HEIGHT * 30) / 700
             );
-        } else {
-            ctx.fillStyle = "rgb(100, 100, 100)";
-            ctx.fillRect(
-                this.positionX + (WIDTH * 25.5) / 400,
-                this.positionY - (HEIGHT * 25) / 700,
-                (WIDTH * 2) / 400,
-                (HEIGHT * 28) / 700
-            );
-            ctx.fillStyle = "rgb(255, 0, 0)";
-            ctx.fillRect(
-                this.positionX + (WIDTH * 27.5) / 400,
-                this.positionY - (HEIGHT * 24) / 700,
-                (WIDTH * 16) / 400,
-                (HEIGHT * 12) / 700
-            );
         }
     }
 
@@ -56,7 +41,7 @@ class Flag {
 
     take(player) {
         if (player.getFlag === true) {
-            this.setState(player.positionX, player.positionY, player.getFlag);
+            this.setState(player.positionX, player.positionY, true);
         }
     }
 
@@ -64,5 +49,21 @@ class Flag {
         this.positionX = positionX;
         this.positionY = positionY;
         this.taken = taken;
+    }
+
+    // 깃발 드롭이 안되는 경우 방지 
+    hasFlagCheck(players) {
+        for (let player in players) {
+            if (players[player].getFlag === true) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    dropCheck(players) {
+        if (this.hasFlagCheck(players) === false) {
+            this.drop();
+        }
     }
 }
