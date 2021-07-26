@@ -1,12 +1,16 @@
 class Flag {
-    constructor(positionX, positionY) {
-        this.positionX = positionX;
-        this.positionY = positionY;
+    constructor(positionX, positionY, taken) {
+        this.positionX = (WIDTH * positionX) / 400;
+        this.positionY = (HEIGHT * positionY) / 700;
         this.velocityX = 0;
         this.velocityY = 0;
-        this.taken = false;
+        this.taken = taken;
         this.width = (HEIGHT * 50) / 700;
         this.height = (HEIGHT * 50) / 700;
+        this.canvasSize = {
+            x: WIDTH,
+            y: HEIGHT,
+        };
     }
 
     display() {
@@ -52,12 +56,13 @@ class Flag {
 
     take(player) {
         if (player.getFlag === true) {
-            this.setPosition(player.positionX, player.positionY);
+            this.setState(player.positionX, player.positionY, player.getFlag);
         }
     }
 
-    setPosition(positionX, positionY) {
+    setState(positionX, positionY, taken) {
         this.positionX = positionX;
         this.positionY = positionY;
+        this.taken = taken;
     }
 }

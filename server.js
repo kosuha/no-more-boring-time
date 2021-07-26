@@ -120,10 +120,11 @@ io.on("connection", async (socket) => {
         }
     });
 
-    const flag = new Flag();
+    
     socket.on("joinRoom", (data) => {
         if (rooms[data.roomId] === undefined) {
-            rooms[data.roomId] = new Room(data.roomId);
+            const flag = new Flag();
+            rooms[data.roomId] = new Room(data.roomId, flag);
         }
 
         console.log(socket.id, "join room: ", data.roomId);
@@ -135,6 +136,7 @@ io.on("connection", async (socket) => {
             player: player,
             joinedRoomId: data.roomId,
             roomData: rooms[data.roomId],
+            flag: rooms[data.roomId].flag
         };
         io.to(socket.gameData.joinedRoomId).emit(
             "generatePlayer",
@@ -147,7 +149,12 @@ io.on("connection", async (socket) => {
     
     socket.on("updatePosition", (data) => {
         try {
-            flag.setPosition(data.flag.positionX, data.flag.positionY);
+            const flagPositionX =
+                (data.flag.positionX / data.flag.canvasSize.x) * 400;
+            const flagPositionY =
+                (data.flag.positionY / data.flag.canvasSize.y) * 700;
+
+                rooms[data.room].flag.setState(flagPositionX, flagPositionY, data.flag.taken);
 
             const updatePlayer = rooms[data.room].getMembers()[socket.id];
             const positionX =
@@ -156,7 +163,7 @@ io.on("connection", async (socket) => {
                 (data.player.positionY / data.player.canvasSize.y) * 700;
             updatePlayer.setPosition(positionX, positionY);
 
-            socket.broadcast.to(data.room).emit("updatePosition", { player: updatePlayer, flag: flag });
+            socket.broadcast.to(data.room).emit("updatePosition", { player: updatePlayer, flag: rooms[data.room].flag });
         } catch (error) {
             io.to(socket.id).emit("redirect");
             console.log("ERROR:updatePosition: ", error);
@@ -172,10 +179,11 @@ io.on("connection", async (socket) => {
 });
 
 class Room {
-    constructor(roomId) {
+    constructor(roomId, flag) {
         this.name = roomId;
         this.members = {};
         this.gravity = 1;
+        this.flag = flag;
     }
 
     pushMember(player) {
@@ -228,11 +236,13 @@ class Flag {
     constructor () {
         this.positionX = 290;
         this.positionY = 200;
+        this.taken = false;
     }
 
-    setPosition(positionX, positionY) {
+    setState(positionX, positionY, taken) {
         this.positionX = positionX;
         this.positionY = positionY;
+        this.taken = taken;
     }
 }
 

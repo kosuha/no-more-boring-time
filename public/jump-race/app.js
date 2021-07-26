@@ -24,6 +24,7 @@ const HEIGHT = canvas.height;
 
 let roomId;
 let players = {};
+let flag;
 
 const physics = new Physics();
 const rank = new Rank((WIDTH * 5) / 400, (HEIGHT * 40) / 700, players);
@@ -76,8 +77,6 @@ const floor5 = new Platform(
     (HEIGHT * 50) / 700
 );
 
-const flag = new Flag((WIDTH * 290) / 400, (HEIGHT * 200) / 700);
-
 function setup(nickName) {
     return new Promise((resolve, reject) => {
         ctx.clearRect(0, 0, WIDTH, HEIGHT);
@@ -100,6 +99,9 @@ function setup(nickName) {
         });
 
         socket.on("disconnected", (id) => {
+            if (players[id] != undefined && players[id].getFlag === true) {
+                flag.drop();
+            }
             delete players[id];
         });
 
@@ -108,7 +110,11 @@ function setup(nickName) {
                 (WIDTH * data.player.positionX) / 400,
                 (HEIGHT * data.player.positionY) / 700
             );
-            flag.setPosition(data.flag.positionX, data.flag.positionY);
+            flag.setState(
+                (WIDTH * data.flag.positionX) / 400,
+                (HEIGHT * data.flag.positionY) / 700,
+                data.flag.taken
+            );
         });
 
         socket.on("rank", (rankList) => {
@@ -154,6 +160,13 @@ function setup(nickName) {
         );
 
         socket.on("generatePlayer", (gameData) => {
+            if (flag === undefined) {
+                flag = new Flag(
+                    gameData.flag.positionX,
+                    gameData.flag.positionY,
+                    gameData.flag.taken
+                );
+            }
             const members = gameData.roomData.members;
             for (let member in members) {
                 if (member in players === false) {
@@ -168,7 +181,7 @@ function setup(nickName) {
                     );
                 }
             }
-            resolve(players[socket.id]);
+            resolve();
         });
     });
 }
@@ -337,8 +350,7 @@ window.onload = () => {
         loading.style.display = "flex";
         popup.remove();
         setup(nickNameInput.value)
-            .then((socketPlayer) => {
-                console.log(socketPlayer);
+            .then(() => {
                 loading.style.display = "none";
                 setInterval(draw, 1000 / 30);
             })
