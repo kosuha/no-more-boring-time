@@ -110,6 +110,7 @@ io.on("connection", async (socket) => {
         if (socket.gameData != undefined) {
             io.to(socket.gameData.joinedRoomId).emit("disconnected", socket.id);
             rooms[socket.gameData.joinedRoomId].popMember(socket.id);
+            rooms[socket.gameData.joinedRoomId].rank.popScore(socket.id);
             socket.leave(socket.gameData.joinedRoomId);
             if (
                 Object.keys(rooms[socket.gameData.joinedRoomId].members)
@@ -119,11 +120,12 @@ io.on("connection", async (socket) => {
             }
         }
     });
-    
+
     socket.on("joinRoom", (data) => {
         if (rooms[data.roomId] === undefined) {
             const flag = new Flag();
-            rooms[data.roomId] = new Room(data.roomId, flag);
+            const rank = new Rank();
+            rooms[data.roomId] = new Room(data.roomId, flag, rank);
         }
 
         console.log(socket.id, "join room: ", data.roomId);
@@ -135,7 +137,7 @@ io.on("connection", async (socket) => {
             player: player,
             joinedRoomId: data.roomId,
             roomData: rooms[data.roomId],
-            flag: rooms[data.roomId].flag
+            flag: rooms[data.roomId].flag,
         };
         io.to(socket.gameData.joinedRoomId).emit(
             "generatePlayer",
@@ -145,7 +147,46 @@ io.on("connection", async (socket) => {
         console.log(rooms[data.roomId].getMembers());
     });
 
-    
+    socket.on("ready", (data) => {
+        if (rooms[data.roomId] != undefined) {
+            rooms[data.roomId].members[socket.id].ready = true;
+
+            let readyFalseCount = 0;
+            for (let player in rooms[data.roomId].members) {
+                if (rooms[data.roomId].members[player].ready === false) {
+                    readyFalseCount++;
+                }
+            }
+
+            if (readyFalseCount === 0) {
+                console.log("ready all!");
+                rooms[data.roomId].gameStart = true;
+                rooms[data.roomId].flag.positionX = 290;
+                rooms[data.roomId].flag.positionY = 200;
+                rooms[data.roomId].flag.taken = false;
+                rooms[data.roomId].rank.rankList = [];
+
+                for (let playerId in rooms[data.roomId].members) {
+                    const player = rooms[data.roomId].members[playerId];
+                    player.positionX = 200 - this.width / 2;
+                    player.positionY = 500 - this.height / 2;
+                    player.ready = false;
+                    player.getFlag = false;
+                }
+                io.to(socket.gameData.joinedRoomId).emit("start", {
+                    player: {
+                        positionX: 200 - this.width / 2,
+                        positionY: 500 - this.height / 2
+                    },
+                    flag: {
+                        positionX: 290,
+                        positionY: 200
+                    }
+                });
+            }
+        }
+    });
+
     socket.on("updatePosition", (data) => {
         try {
             const flagPositionX =
@@ -153,7 +194,11 @@ io.on("connection", async (socket) => {
             const flagPositionY =
                 (data.flag.positionY / data.flag.canvasSize.y) * 700;
 
-                rooms[data.room].flag.setState(flagPositionX, flagPositionY, data.flag.taken);
+            rooms[data.room].flag.setState(
+                flagPositionX,
+                flagPositionY,
+                data.flag.taken
+            );
 
             const updatePlayer = rooms[data.room].getMembers()[socket.id];
             const positionX =
@@ -162,32 +207,42 @@ io.on("connection", async (socket) => {
                 (data.player.positionY / data.player.canvasSize.y) * 700;
             updatePlayer.setState(positionX, positionY, data.player.getFlag);
 
-            socket.broadcast.to(data.room).emit("updatePosition", { player: updatePlayer, flag: rooms[data.room].flag });
+            rooms[data.room].rank.pushScore(data.player);
+            const result = rooms[data.room].rank.totalRank();
+            
+            io.to(data.room).emit("rank", result);
+
+            socket.broadcast.to(data.room).emit("updatePosition", {
+                player: updatePlayer,
+                flag: rooms[data.room].flag
+            });
         } catch (error) {
             io.to(socket.id).emit("redirect");
             console.log("ERROR:updatePosition: ", error);
         }
     });
 
-    const rank = new Rank();
-    socket.on("rank", (players) => {
-        try {
-            rank.pushScore(players);
-            const result = rank.totalRank();
-            io.to(socket.gameData.joinedRoomId).emit("rank", result);
-        } catch (error) {
-            io.to(socket.id).emit("redirect");
-            console.log("ERROR:rank: ", error);
-        }
-    });
+    
+    // socket.on("rank", (players) => {
+    //     try {
+    //         rank.pushScore(players);
+    //         const result = rank.totalRank();
+    //         io.to(socket.gameData.joinedRoomId).emit("rank", result);
+    //     } catch (error) {
+    //         io.to(socket.id).emit("redirect");
+    //         console.log("ERROR:rank: ", error);
+    //     }
+    // });
 });
 
 class Room {
-    constructor(roomId, flag) {
+    constructor(roomId, flag, rank) {
         this.name = roomId;
         this.members = {};
         this.gravity = 1;
         this.flag = flag;
+        this.gameStart = false;
+        this.rank = rank;
     }
 
     pushMember(player) {
@@ -215,6 +270,7 @@ class Player {
         this.positionY = 500 - this.height / 2;
         this.speed = 10;
         this.getFlag = false;
+        this.ready = false;
         this.color =
             "rgba(" +
             randomNumber(50, 200) +
@@ -239,7 +295,7 @@ class Player {
 }
 
 class Flag {
-    constructor () {
+    constructor() {
         this.positionX = 290;
         this.positionY = 200;
         this.taken = false;
@@ -257,17 +313,31 @@ class Rank {
         this.rankList = [];
     }
 
-    pushScore(players) {
-        for (let player in players) {
-            this.rankList.push(players[player]);
+    pushScore(player) {
+        let isPlayerInList = false
+        for (let i = 0; i < this.rankList.length; i++) {
+            if (player.id === this.rankList[i].id) {
+                this.rankList[i].score = player.score;
+                isPlayerInList = true;
+            }
+        }
+        if (isPlayerInList === false) {
+            this.rankList.push(player);
         }
     }
 
-    totalRank(){
+    popScore(id) {
+        for (let i = 0; i < this.rankList.length; i++) {
+            if (id === this.rankList[i].id) {
+                this.rankList.splice(i, 1);
+            }
+        }
+    }
+
+    totalRank() {
         const result = this.rankList.sort(function (a, b) {
             return b.score - a.score;
         });
-        this.rankList = [];
         return result;
     }
 }

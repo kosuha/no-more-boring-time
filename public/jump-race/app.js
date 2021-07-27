@@ -28,8 +28,14 @@ let flag;
 
 const physics = new Physics();
 const rank = new Rank((WIDTH * 5) / 400, (HEIGHT * 40) / 700, players);
-const button = new Button(
+const inviteButton = new Button(
     (WIDTH * 5) / 400,
+    (HEIGHT * 5) / 700,
+    (WIDTH * 54) / 400,
+    (HEIGHT * 30) / 700
+);
+const readyButton = new Button(
+    (WIDTH * 100) / 400,
     (HEIGHT * 5) / 700,
     (WIDTH * 54) / 400,
     (HEIGHT * 30) / 700
@@ -105,6 +111,23 @@ function setup(nickName) {
             delete players[id];
         });
 
+        socket.on("start", (data) => {
+            for (let id in players) {
+                players[id].positionX = (WIDTH * data.player.positionX) / 400;
+                players[id].positionY = (HEIGHT * data.player.positionY) / 700;
+                players[id].velocityX = 0;
+                players[id].velocityY = 0;
+                players[id].score = 0;
+                players[id].getFlag = false;
+            }
+
+            flag.positionX = (WIDTH * data.flag.positionX) / 400;
+            flag.positionY = (HEIGHT * data.flag.positionY) / 700;
+            flag.velocityX = 0;
+            flag.velocityY = 0;
+            flag.taken = false;
+        });
+
         socket.on("updatePosition", (data) => {
             players[data.player.id].setState(
                 (WIDTH * data.player.positionX) / 400,
@@ -118,8 +141,8 @@ function setup(nickName) {
             );
         });
 
-        socket.on("rank", (rankList) => {
-            rank.setRankList(rankList);
+        socket.on("rank", (data) => {
+            rank.setRankList(data);
         });
 
         window.addEventListener("keydown", keyListener);
@@ -146,6 +169,7 @@ function setup(nickName) {
                 .addEventListener("touchend" || "click", touchButtonRight);
         }
 
+        // 버튼 클릭 이벤트
         canvas.addEventListener(
             "click",
             function (e) {
@@ -153,8 +177,21 @@ function setup(nickName) {
                 let mousePositionX = e.clientX - rect.left;
                 let mousePositionY = e.clientY - rect.top;
 
-                if (button.isInside(mousePositionX, mousePositionY) === true) {
+                if (
+                    inviteButton.isInside(mousePositionX, mousePositionY) ===
+                    true
+                ) {
                     inviteKakao();
+                }
+
+                if (
+                    readyButton.isInside(mousePositionX, mousePositionY) ===
+                    true
+                ) {
+                    socket.emit("ready", {
+                        roomId: roomId,
+                    });
+                    console.log("ready click");
                 }
             },
             false
@@ -195,7 +232,8 @@ function draw() {
     floor.display();
     wallLeft.display();
     wallRight.display();
-    button.display();
+    inviteButton.display("친구초대");
+    readyButton.display("준비");
 
     floor2.display();
     floor3.display();
@@ -244,12 +282,11 @@ function draw() {
     physics.useCollisionWithFloor(flag, floor4);
     physics.useCollisionWithFloor(flag, floor5);
 
-    socket.emit("rank", players);
-    rank.display(players);
+    rank.display();
     socket.emit("updatePosition", {
         room: roomId,
         player: players[socket.id],
-        flag: flag,
+        flag: flag
     });
 }
 

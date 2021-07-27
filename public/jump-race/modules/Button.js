@@ -15,7 +15,7 @@ class Button {
         );
     }
 
-    display() {
+    display(text) {
         // this.addClickEvent(func);
         ctx.fillStyle = "rgba(0, 255, 0, 0.2)";
         ctx.fillRect(this.positionX, this.positionY, this.width, this.height);
@@ -25,7 +25,7 @@ class Button {
         ctx.fillStyle = "rgb(0, 0, 0)";
         ctx.font = (WIDTH * 12) / 400 + "px san-serif";
         ctx.fillText(
-            "친구초대",
+            text,
             this.positionX + (WIDTH * 6) / 400,
             this.positionY + (WIDTH * 18) / 400
         );
