@@ -221,18 +221,6 @@ io.on("connection", async (socket) => {
             console.log("ERROR:updatePosition: ", error);
         }
     });
-
-    
-    // socket.on("rank", (players) => {
-    //     try {
-    //         rank.pushScore(players);
-    //         const result = rank.totalRank();
-    //         io.to(socket.gameData.joinedRoomId).emit("rank", result);
-    //     } catch (error) {
-    //         io.to(socket.id).emit("redirect");
-    //         console.log("ERROR:rank: ", error);
-    //     }
-    // });
 });
 
 class Room {
