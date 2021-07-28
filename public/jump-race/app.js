@@ -1,156 +1,80 @@
-const socket = io();
-
-let width = 0;
-let height = 0;
-
-if (window.innerWidth / window.innerHeight > 400 / 700) {
-    width = (window.innerHeight * 400) / 700;
-    height = window.innerHeight;
-} else {
-    width = window.innerWidth;
-    height = (window.innerWidth * 700) / 400;
-}
-
-const isMobile = deviceCheck();
-
-const canvas = document.getElementById("canvas");
-const ctx = canvas.getContext("2d");
-
-canvas.width = width;
-canvas.height = height;
-
-const WIDTH = canvas.width;
-const HEIGHT = canvas.height;
-
-let roomId;
-let players = {};
-let flag;
-
-const physics = new Physics();
-const rank = new Rank((WIDTH * 5) / 400, (HEIGHT * 40) / 700, players);
-const inviteButton = new Button(
-    (WIDTH * 5) / 400,
-    (HEIGHT * 5) / 700,
-    (WIDTH * 54) / 400,
-    (HEIGHT * 30) / 700
-);
-const readyButton = new Button(
-    (WIDTH * 100) / 400,
-    (HEIGHT * 5) / 700,
-    (WIDTH * 54) / 400,
-    (HEIGHT * 30) / 700
-);
-const wallLeft = new Wall(
-    (HEIGHT * -20) / 700,
-    (HEIGHT * 0) / 700,
-    (HEIGHT * 20) / 700,
-    (HEIGHT * 700) / 700
-);
-const wallRight = new Wall(
-    (HEIGHT * 400) / 700,
-    (HEIGHT * 0) / 700,
-    (HEIGHT * 20) / 700,
-    (HEIGHT * 700) / 700
-);
-
-const floor = new Array(5);
-
-floor[0] = new Platform(
-    (WIDTH * 200) / 400,
-    (HEIGHT * 670) / 700,
-    (WIDTH * 200) / 400,
-    (HEIGHT * 40) / 700
-);
-floor[1] = new Platform(
-    (WIDTH * 0) / 400,
-    (HEIGHT * 350) / 700,
-    (WIDTH * 200) / 400,
-    (HEIGHT * 40) / 700
-);
-floor[2] = new Platform(
-    (WIDTH * 200) / 400,
-    (HEIGHT * 450) / 700,
-    (WIDTH * 100) / 400,
-    (HEIGHT * 40) / 700
-);
-floor[3] = new Platform(
-    (WIDTH * 300) / 400,
-    (HEIGHT * 250) / 700,
-    (WIDTH * 30) / 400,
-    (HEIGHT * 40) / 700
-);
-floor[4] = new Platform(
-    (WIDTH * 0) / 400,
-    (HEIGHT * 600) / 700,
-    (WIDTH * 150) / 400,
-    (HEIGHT * 40) / 700
-);
-
 function setup(nickName) {
     return new Promise((resolve, reject) => {
+        // canvas 초기화
         ctx.clearRect(0, 0, WIDTH, HEIGHT);
-
         ctx.fillStyle = "rgb(255, 255, 255)";
         ctx.fillRect(0, 0, WIDTH, HEIGHT);
 
+        // 초대 받은 url 인지 체크 (파라미터 검색)
         const url = new URL(window.location.href);
         const urlParams = url.searchParams;
-
         if (urlParams.has("room")) {
-            roomId = urlParams.get("room");
+            roomData.roomId = urlParams.get("room");
         } else {
-            roomId = socket.id + "_room";
+            roomData.roomId = socket.id + "_room";
         }
 
+        // 접속 시 서버에 알림
         socket.emit("joinRoom", {
-            roomId: roomId,
+            roomId: roomData.roomId,
             nickName: nickName,
         });
 
+        // 접속 종료 서버에 알림, 객체 제거
         socket.on("disconnected", (id) => {
-            if (players[id] != undefined && players[id].getFlag === true) {
-                flag.drop();
+            if (
+                roomData.players[id] != undefined &&
+                roomData.players[id].getFlag === true
+            ) {
+                roomData.flag.drop();
             }
-            delete players[id];
+            delete roomData.players[id];
         });
 
+        // 시작 신호 받음
         socket.on("start", (data) => {
-            for (let id in players) {
-                players[id].positionX = (WIDTH * data.player.positionX) / 400;
-                players[id].positionY = (HEIGHT * data.player.positionY) / 700;
-                players[id].velocityX = 0;
-                players[id].velocityY = 0;
-                players[id].score = 0;
-                players[id].getFlag = false;
+            for (let id in roomData.players) {
+                roomData.players[id].positionX =
+                    (WIDTH * data.player.positionX) / 400;
+                roomData.players[id].positionY =
+                    (HEIGHT * data.player.positionY) / 700;
+                roomData.players[id].velocityX = 0;
+                roomData.players[id].velocityY = 0;
+                roomData.players[id].score = 0;
+                roomData.players[id].getFlag = false;
             }
 
-            flag.positionX = (WIDTH * data.flag.positionX) / 400;
-            flag.positionY = (HEIGHT * data.flag.positionY) / 700;
-            flag.velocityX = 0;
-            flag.velocityY = 0;
-            flag.taken = false;
+            roomData.flag.positionX = (WIDTH * data.flag.positionX) / 400;
+            roomData.flag.positionY = (HEIGHT * data.flag.positionY) / 700;
+            roomData.flag.velocityX = 0;
+            roomData.flag.velocityY = 0;
+            roomData.flag.taken = false;
         });
 
+        // 서버에서 상태 업데이트 데이터 받음
         socket.on("updatePosition", (data) => {
-            players[data.player.id].setState(
+            roomData.players[data.player.id].setState(
                 (WIDTH * data.player.positionX) / 400,
                 (HEIGHT * data.player.positionY) / 700,
                 data.player.getFlag
             );
-            flag.setState(
+            roomData.flag.setState(
                 (WIDTH * data.flag.positionX) / 400,
                 (HEIGHT * data.flag.positionY) / 700,
                 data.flag.taken
             );
         });
 
+        // 서버에서 랭크 업데이트 데이터 받음
         socket.on("rank", (data) => {
             rank.setRankList(data);
         });
 
+        // key 이벤트
         window.addEventListener("keydown", keyListener);
         window.addEventListener("keyup", keyListener);
 
+        // 모바일 터치 이벤트
         if (isMobile === true) {
             document
                 .querySelector("#up-button")
@@ -192,7 +116,7 @@ function setup(nickName) {
                     true
                 ) {
                     socket.emit("ready", {
-                        roomId: roomId,
+                        roomId: roomData.roomId,
                     });
                     console.log("ready click");
                 }
@@ -200,9 +124,11 @@ function setup(nickName) {
             false
         );
 
+        // 서버에서 새로 생성할 객체 정보 받아서 생성
         socket.on("generatePlayer", (gameData) => {
-            if (flag === undefined) {
-                flag = new Flag(
+            // 깃발 객체가 없다면 생성
+            if (roomData.flag === undefined) {
+                roomData.flag = new Flag(
                     gameData.flag.positionX,
                     gameData.flag.positionY,
                     gameData.flag.taken
@@ -210,8 +136,9 @@ function setup(nickName) {
             }
             const members = gameData.roomData.members;
             for (let member in members) {
-                if (member in players === false) {
-                    players[member] = new Player(
+                // 플레이어 목록에 없는 플레이어라면 생성
+                if (member in roomData.players === false) {
+                    roomData.players[member] = new Player(
                         member,
                         members[member].positionX,
                         members[member].positionY,
@@ -222,71 +149,106 @@ function setup(nickName) {
                     );
                 }
             }
+
+            // promise (draw 함수가 실행 되기 전에 setup이 완료 되어야 함)
             resolve();
         });
     });
 }
 
 function draw() {
+    // canvas 초기화
     ctx.clearRect(0, 0, WIDTH, HEIGHT);
     ctx.fillStyle = "rgb(255, 255, 255)";
     ctx.fillRect(0, 0, WIDTH, HEIGHT);
 
+    // canvas에 벽 생성
     wallLeft.display();
     wallRight.display();
+
+    // canvas에 버튼 생성
     inviteButton.display("친구초대");
     readyButton.display("준비");
 
+    // canvas에 바닥 생성
     for (let i = 0; i < floor.length; i++) {
         floor[i].display();
     }
 
-    let doneList = []; // 플레이어 간 충돌 체크 함수가 중복으로 사용되는 것을 막음.
+    let doneList = [];// 플레이어 간 충돌 체크 함수가 중복으로 사용되는 것을 막음.
 
-    for (let player in players) {
-        for (let player_ in players) {
+    for (let player in roomData.players) {
+        for (let player_ in roomData.players) {
             if (player != player_ && doneList.includes(player_) === false) {
+                // 플레이어 충돌 적용
                 physics.useCollisionWithPlayer(
-                    players[player],
-                    players[player_],
-                    flag
+                    roomData.players[player],
+                    roomData.players[player_],
+                    roomData.flag
                 );
             }
         }
         doneList.push(player);
 
-        flag.take(players[player]);
+        // 깃발 획득 적용
+        roomData.flag.take(roomData.players[player]);
 
-        physics.useMove(players[player], players[player].keyInput);
-        physics.usePhysics(players[player]);
-        physics.useScore(players[player], flag);
-        physics.useCollisionWithWall(players[player], wallLeft, wallRight);
-        physics.useInfinityFall(players[player]);
-        physics.useInfinityFall(flag);
+        // 플레이어 가속도, 중력 적용
+        physics.useMove(
+            roomData.players[player],
+            roomData.players[player].keyInput
+        );
+        physics.usePhysics(roomData.players[player]);
+
+        // 깃발 획득 시 점수 증가
+        physics.useScore(roomData.players[player], roomData.flag);
+
+        // 벽 충돌 적용
+        physics.useCollisionWithWall(
+            roomData.players[player],
+            wallLeft,
+            wallRight
+        );
+
+        // 플레이어와 깃발에 무한 낙하 적용
+        physics.useInfinityFall(roomData.players[player]);
+        physics.useInfinityFall(roomData.flag);
+
+        // 플레이어 바닥 충돌 적용
         for (let i = 0; i < floor.length; i++) {
-            physics.useCollisionWithFloor(players[player], floor[i]);
+            physics.useCollisionWithFloor(roomData.players[player], floor[i]);
         }
 
-        players[player].display();
+        // canvas에 플레이어 생성
+        roomData.players[player].display();
     }
 
-    flag.dropCheck(players);
-    flag.display();
+    // 깃발이 소유된 상태인지 재확인
+    roomData.flag.dropCheck(roomData.players);
 
-    physics.usePhysics(flag);
-    physics.useInfinityFall(flag);
+    // canvas에 깃발 생성
+    roomData.flag.display();
+
+    // 깃발에 가속도, 중력 적용
+    physics.usePhysics(roomData.flag);
+
+    // 깃발 바닥 충돌 적용
     for (let i = 0; i < floor.length; i++) {
-        physics.useCollisionWithFloor(flag, floor[i]);
+        physics.useCollisionWithFloor(roomData.flag, floor[i]);
     }
 
+    // 랭크
     rank.display();
+
+    // 서버로 업데이트 데이터 보냄
     socket.emit("updatePosition", {
-        room: roomId,
-        player: players[socket.id],
-        flag: flag,
+        room: roomData.roomId,
+        player: roomData.players[socket.id],
+        flag: roomData.flag,
     });
 }
 
+// key input을 변수에 저장
 function keyListener(e) {
     let keyState = false;
 
@@ -298,13 +260,13 @@ function keyListener(e) {
 
     switch (e.code) {
         case "ArrowLeft":
-            players[socket.id].keyInput.left = keyState;
+            roomData.players[socket.id].keyInput.left = keyState;
             break;
         case "ArrowRight":
-            players[socket.id].keyInput.right = keyState;
+            roomData.players[socket.id].keyInput.right = keyState;
             break;
         case "ArrowUp":
-            players[socket.id].keyInput.up = keyState;
+            roomData.players[socket.id].keyInput.up = keyState;
             break;
     }
 }
@@ -318,7 +280,7 @@ function touchButtonLeft(e) {
         touchState = false;
     }
 
-    players[socket.id].keyInput.left = touchState;
+    roomData.players[socket.id].keyInput.left = touchState;
 }
 
 function touchButtonRight(e) {
@@ -330,7 +292,7 @@ function touchButtonRight(e) {
         touchState = false;
     }
 
-    players[socket.id].keyInput.right = touchState;
+    roomData.players[socket.id].keyInput.right = touchState;
 }
 
 function touchButtonUp(e) {
@@ -342,7 +304,7 @@ function touchButtonUp(e) {
         touchState = false;
     }
 
-    players[socket.id].keyInput.up = touchState;
+    roomData.players[socket.id].keyInput.up = touchState;
 }
 
 // 접속 기기 체크
@@ -365,10 +327,12 @@ window.onload = () => {
     const mobileKeys = document.querySelector("#keys");
     const loading = document.querySelector("#loading_background");
 
+    // 모바일 환경에서 터치 버튼 활성화
     if (isMobile) {
         mobileKeys.style.display = "flex";
     }
 
+    // 서버 에러 발생 시 처리
     socket.on("redirect", () => {
         socket.disconnect();
         const roomCheck = confirm("서버 종료");
@@ -380,6 +344,7 @@ window.onload = () => {
         }
     });
 
+    // 닉네임 입력 버튼 이벤트
     nickNameEnterButton.addEventListener("click", () => {
         nickNameEnterButton.disabled = true;
         loading.style.display = "flex";
@@ -387,9 +352,12 @@ window.onload = () => {
         setup(nickNameInput.value)
             .then(() => {
                 loading.style.display = "none";
-                setInterval(draw, 1000 / 30);
+                
+                // 30 프레임 loop
+                setInterval(draw, 1000 / 30); 
             })
             .catch((error) => {
+                // 서버 에러 발생 시 처리
                 socket.disconnect();
                 const roomCheck = confirm(error);
 
