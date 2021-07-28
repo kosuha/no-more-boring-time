@@ -1,7 +1,7 @@
 const socket = io();
 
-var width = 0;
-var height = 0;
+let width = 0;
+let height = 0;
 
 if (window.innerWidth / window.innerHeight > 400 / 700) {
     width = (window.innerHeight * 400) / 700;
