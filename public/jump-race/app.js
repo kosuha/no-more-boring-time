@@ -40,12 +40,6 @@ const readyButton = new Button(
     (WIDTH * 54) / 400,
     (HEIGHT * 30) / 700
 );
-const floor = new Platform(
-    (WIDTH * 200) / 400,
-    (HEIGHT * 670) / 700,
-    (WIDTH * 200) / 400,
-    (HEIGHT * 40) / 700
-);
 const wallLeft = new Wall(
     (HEIGHT * -20) / 700,
     (HEIGHT * 0) / 700,
@@ -58,25 +52,34 @@ const wallRight = new Wall(
     (HEIGHT * 20) / 700,
     (HEIGHT * 700) / 700
 );
-const floor2 = new Platform(
+
+const floor = new Array(5);
+
+floor[0] = new Platform(
+    (WIDTH * 200) / 400,
+    (HEIGHT * 670) / 700,
+    (WIDTH * 200) / 400,
+    (HEIGHT * 40) / 700
+);
+floor[1] = new Platform(
     (WIDTH * 0) / 400,
     (HEIGHT * 350) / 700,
     (WIDTH * 200) / 400,
     (HEIGHT * 40) / 700
 );
-const floor3 = new Platform(
+floor[2] = new Platform(
     (WIDTH * 200) / 400,
     (HEIGHT * 450) / 700,
     (WIDTH * 100) / 400,
     (HEIGHT * 40) / 700
 );
-const floor4 = new Platform(
+floor[3] = new Platform(
     (WIDTH * 300) / 400,
     (HEIGHT * 250) / 700,
     (WIDTH * 30) / 400,
     (HEIGHT * 40) / 700
 );
-const floor5 = new Platform(
+floor[4] = new Platform(
     (WIDTH * 0) / 400,
     (HEIGHT * 600) / 700,
     (WIDTH * 150) / 400,
@@ -229,16 +232,14 @@ function draw() {
     ctx.fillStyle = "rgb(255, 255, 255)";
     ctx.fillRect(0, 0, WIDTH, HEIGHT);
 
-    floor.display();
     wallLeft.display();
     wallRight.display();
     inviteButton.display("친구초대");
     readyButton.display("준비");
 
-    floor2.display();
-    floor3.display();
-    floor4.display();
-    floor5.display();
+    for (let i = 0; i < floor.length; i++) {
+        floor[i].display();
+    }
 
     let doneList = []; // 플레이어 간 충돌 체크 함수가 중복으로 사용되는 것을 막음.
 
@@ -259,14 +260,12 @@ function draw() {
         physics.useMove(players[player], players[player].keyInput);
         physics.usePhysics(players[player]);
         physics.useScore(players[player], flag);
-        physics.useCollisionWithFloor(players[player], floor);
         physics.useCollisionWithWall(players[player], wallLeft, wallRight);
         physics.useInfinityFall(players[player]);
-
-        physics.useCollisionWithFloor(players[player], floor2);
-        physics.useCollisionWithFloor(players[player], floor3);
-        physics.useCollisionWithFloor(players[player], floor4);
-        physics.useCollisionWithFloor(players[player], floor5);
+        physics.useInfinityFall(flag);
+        for (let i = 0; i < floor.length; i++) {
+            physics.useCollisionWithFloor(players[player], floor[i]);
+        }
 
         players[player].display();
     }
@@ -276,17 +275,15 @@ function draw() {
 
     physics.usePhysics(flag);
     physics.useInfinityFall(flag);
-    physics.useCollisionWithFloor(flag, floor);
-    physics.useCollisionWithFloor(flag, floor2);
-    physics.useCollisionWithFloor(flag, floor3);
-    physics.useCollisionWithFloor(flag, floor4);
-    physics.useCollisionWithFloor(flag, floor5);
+    for (let i = 0; i < floor.length; i++) {
+        physics.useCollisionWithFloor(flag, floor[i]);
+    }
 
     rank.display();
     socket.emit("updatePosition", {
         room: roomId,
         player: players[socket.id],
-        flag: flag
+        flag: flag,
     });
 }
 
