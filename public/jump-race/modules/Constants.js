@@ -12,8 +12,8 @@ if (window.innerWidth / window.innerHeight > 400 / 700) {
     height = (window.innerWidth * 700) / 400;
 }
 
-// 모바일 환경 체크 
-const isMobile = deviceCheck();
+// // 모바일 환경 체크 
+// const isMobile = deviceCheck();
 
 // canvas
 const canvas = document.getElementById("canvas");
@@ -27,7 +27,7 @@ const HEIGHT = canvas.height;
 
 const roomData = {
     roomId: undefined, // 방 ID
-    players = {}, // 접속 중인 플레이어 목록
+    players: {}, // 접속 중인 플레이어 목록
     flag: undefined // 깃발 Class가 담길 변수
 };
 

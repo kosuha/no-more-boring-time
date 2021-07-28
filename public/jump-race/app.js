@@ -75,7 +75,7 @@ function setup(nickName) {
         window.addEventListener("keyup", keyListener);
 
         // 모바일 터치 이벤트
-        if (isMobile === true) {
+        if (deviceCheck() === true) {
             document
                 .querySelector("#up-button")
                 .addEventListener("touchstart" || "click", touchButtonUp);
@@ -328,7 +328,7 @@ window.onload = () => {
     const loading = document.querySelector("#loading_background");
 
     // 모바일 환경에서 터치 버튼 활성화
-    if (isMobile) {
+    if (deviceCheck()) {
         mobileKeys.style.display = "flex";
     }
 
