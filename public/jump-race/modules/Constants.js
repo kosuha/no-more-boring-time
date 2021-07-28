@@ -12,9 +12,6 @@ if (window.innerWidth / window.innerHeight > 400 / 700) {
     height = (window.innerWidth * 700) / 400;
 }
 
-// // 모바일 환경 체크 
-// const isMobile = deviceCheck();
-
 // canvas
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
