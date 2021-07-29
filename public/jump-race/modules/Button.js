@@ -17,7 +17,6 @@ class Button {
     }
 
     display(text) {
-        // this.addClickEvent(func);
         ctx.fillStyle = "rgba(0, 255, 0, 0.2)";
         ctx.fillRect(this.positionX, this.positionY, this.width, this.height);
         ctx.lineWidth = (WIDTH * 1) / 400;

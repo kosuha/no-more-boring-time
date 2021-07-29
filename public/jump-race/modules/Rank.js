@@ -10,7 +10,6 @@ class Rank {
     }
 
     display() {
-        // console.log(this.rankList);
         ctx.font = (WIDTH * 12) / 400 + "px san-serif";
         let marginTop = 3;
 
