@@ -6,6 +6,7 @@ class Button {
         this.height = height;
     }
 
+    // 마우스 포지션이 버튼 안에 있는지 체크
     isInside(mousePositionX, mousePositionY) {
         return (
             mousePositionX > this.positionX &&

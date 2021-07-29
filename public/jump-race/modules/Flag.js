@@ -32,6 +32,7 @@ class Flag {
         }
     }
 
+    // 깃발 떨어뜨리기
     drop() {
         if (this.taken === true) {
             this.velocityY -= (HEIGHT * 30) / 700;
@@ -39,19 +40,21 @@ class Flag {
         }
     }
 
+    // 깃발 획득 상태
     take(player) {
         if (player.getFlag === true) {
             this.setState(player.positionX, player.positionY, true);
         }
     }
 
+    // 상태 업데이트
     setState(positionX, positionY, taken) {
         this.positionX = positionX;
         this.positionY = positionY;
         this.taken = taken;
     }
 
-    // 깃발 드롭이 안되는 경우 방지 
+    // 깃발을 가진 플레이어가 있는지 체크
     hasFlagCheck(players) {
         for (let player in players) {
             if (players[player].getFlag === true) {
@@ -61,6 +64,7 @@ class Flag {
         return false;
     }
 
+    // 깃발 드롭이 안되는 경우 방지
     dropCheck(players) {
         if (this.hasFlagCheck(players) === false) {
             this.drop();

@@ -32,6 +32,7 @@ class Player {
         return this.nickName;
     }
 
+    // 상태 업데이트
     setState(positionX, positionY, getFlag) {
         this.positionX = positionX;
         this.positionY = positionY;
@@ -148,9 +149,5 @@ class Player {
                 (HEIGHT * 12) / 700
             );
         }
-    }
-
-    lerp(start, end, amt) {
-        return (1 - amt) * start + amt * end;
     }
 }

@@ -6,6 +6,7 @@ class Physics {
         this.jumpPower = (HEIGHT * 50) / 700;
     }
 
+    // 가속도, 중력
     usePhysics(player) {
         player.velocityY += this.gravity; // gravity
         player.positionX += player.velocityX;
@@ -14,6 +15,7 @@ class Physics {
         player.velocityY *= this.friction;
     }
 
+    // 플레이어 움직임
     useMove(player, keyInput) {
         if (keyInput.up && player.jumping === false && player.velocityY === 0) {
             player.velocityY -= this.jumpPower;
@@ -29,10 +31,7 @@ class Physics {
         }
     }
 
-    useGravity(player) {
-        player.positionY += this.gravity;
-    }
-
+    // 맵 위 아래 연결
     useInfinityFall(player) {
         if (player.positionY < -player.height) {
             player.positionY = (HEIGHT * 700) / 700;
@@ -41,6 +40,7 @@ class Physics {
         }
     }
 
+    // 플레이어간 충돌
     useCollisionWithPlayer(a, b, flag) {
         const dist = this.distance(a, b);
         const power = a.width - dist;
@@ -68,6 +68,7 @@ class Physics {
         }
     }
 
+    // 점수 계산
     useScore(player, flag) {
         const dist = this.distance(player, flag);
 
@@ -81,6 +82,7 @@ class Physics {
         }
     }
 
+    // 벽 충돌
     useCollisionWithWall(player, leftWall, rightWall) {
         if (player.positionX < leftWall.positionX + leftWall.width) {
             player.positionX = leftWall.positionX + leftWall.width;
@@ -91,6 +93,7 @@ class Physics {
         }
     }
 
+    // 바닥 충돌
     useCollisionWithFloor(player, floor) {
         if (
             floor.positionY < player.positionY + player.height &&
@@ -105,6 +108,7 @@ class Physics {
         }
     }
 
+    // 객체 사이의 거리 계산
     distance(a, b) {
         const x = a.positionX - b.positionX;
         const y = a.positionY - b.positionY;
