@@ -22,6 +22,7 @@ class Player {
         };
         this.score = 0;
         this.getFlag = false;
+        this.waiting = true;
     }
 
     getId() {
@@ -40,6 +41,12 @@ class Player {
     }
 
     display() {
+        if (this.waiting === true) {
+            ctx.globalAlpha = "0.1";
+        } else {
+            ctx.globalAlpha = "1.0";
+        }
+
         ctx.fillStyle = this.color;
 
         // 닉네임
@@ -149,5 +156,7 @@ class Player {
                 (HEIGHT * 12) / 700
             );
         }
+
+        ctx.globalAlpha = "1.0";
     }
 }

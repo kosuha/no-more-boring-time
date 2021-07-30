@@ -70,15 +70,17 @@ class Physics {
 
     // 점수 계산
     useScore(player, flag) {
-        const dist = this.distance(player, flag);
+        if (player.waiting === false) {
+            const dist = this.distance(player, flag);
 
-        if (dist < player.width / 2 && player.getFlag === false && flag.taken == false && flag.velocityY === 0) {
-            player.getFlag = true;
-            flag.taken = true;
-        }
-
-        if (player.getFlag === true) {
-            player.score += 1;
+            if (dist < player.width / 2 && player.getFlag === false && flag.taken == false && flag.velocityY === 0) {
+                player.getFlag = true;
+                flag.taken = true;
+            }
+    
+            if (player.getFlag === true) {
+                player.score += 1;
+            }
         }
     }
 

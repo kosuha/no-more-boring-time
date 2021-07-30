@@ -172,6 +172,7 @@ io.on("connection", async (socket) => {
                     player.positionY = 500 - this.height / 2;
                     player.ready = false;
                     player.getFlag = false;
+                    rooms[data.roomId].inGamePlayers[player.id] = player;
                 }
                 io.to(socket.gameData.joinedRoomId).emit("start", {
                     player: {
@@ -227,6 +228,7 @@ class Room {
     constructor(roomId, flag, rank) {
         this.name = roomId;
         this.members = {};
+        this.inGamePlayers = {};
         this.gravity = 1;
         this.flag = flag;
         this.gameStart = false;
@@ -259,6 +261,7 @@ class Player {
         this.speed = 10;
         this.getFlag = false;
         this.ready = false;
+        this.waiting = true;
         this.color =
             "rgba(" +
             randomNumber(50, 200) +
@@ -302,15 +305,17 @@ class Rank {
     }
 
     pushScore(player) {
-        let isPlayerInList = false
-        for (let i = 0; i < this.rankList.length; i++) {
-            if (player.id === this.rankList[i].id) {
-                this.rankList[i].score = player.score;
-                isPlayerInList = true;
+        if (player.waiting === false) {
+            let isPlayerInList = false
+            for (let i = 0; i < this.rankList.length; i++) {
+                if (player.id === this.rankList[i].id) {
+                    this.rankList[i].score = player.score;
+                    isPlayerInList = true;
+                }
             }
-        }
-        if (isPlayerInList === false) {
-            this.rankList.push(player);
+            if (isPlayerInList === false) {
+                this.rankList.push(player);
+            }
         }
     }
 

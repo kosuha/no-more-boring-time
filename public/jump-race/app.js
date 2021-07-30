@@ -112,9 +112,11 @@ function setup(nickName) {
                 }
 
                 if (
+                    readyButton.use === true &&
                     readyButton.isInside(mousePositionX, mousePositionY) ===
-                    true
+                        true
                 ) {
+                    readyButton.use = false;
                     socket.emit("ready", {
                         roomId: roomData.roomId,
                     });
@@ -175,7 +177,7 @@ function draw() {
         floor[i].display();
     }
 
-    let doneList = [];// 플레이어 간 충돌 체크 함수가 중복으로 사용되는 것을 막음.
+    let doneList = []; // 플레이어 간 충돌 체크 함수가 중복으로 사용되는 것을 막음.
 
     for (let player in roomData.players) {
         for (let player_ in roomData.players) {
@@ -352,9 +354,9 @@ window.onload = () => {
         setup(nickNameInput.value)
             .then(() => {
                 loading.style.display = "none";
-                
+
                 // 30 프레임 loop
-                setInterval(draw, 1000 / 30); 
+                setInterval(draw, 1000 / 30);
             })
             .catch((error) => {
                 // 서버 에러 발생 시 처리
