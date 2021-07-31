@@ -175,10 +175,7 @@ io.on("connection", async (socket) => {
                     rooms[data.roomId].inGamePlayers[player.id] = player;
                 }
                 io.to(socket.gameData.joinedRoomId).emit("start", {
-                    player: {
-                        positionX: 200 - this.width / 2,
-                        positionY: 500 - this.height / 2
-                    },
+                    inGamePlayers: rooms[data.roomId].inGamePlayers,
                     flag: {
                         positionX: 290,
                         positionY: 200
@@ -210,8 +207,9 @@ io.on("connection", async (socket) => {
 
             rooms[data.room].rank.pushScore(data.player);
             const result = rooms[data.room].rank.totalRank();
+            const winPlayer = rooms[data.room].rank.winner(result);
             
-            io.to(data.room).emit("rank", result);
+            io.to(data.room).emit("rank", { list: result, winner: winPlayer });
 
             socket.broadcast.to(data.room).emit("updatePosition", {
                 player: updatePlayer,
@@ -332,6 +330,19 @@ class Rank {
             return b.score - a.score;
         });
         return result;
+    }
+
+    winner(rankList) {
+        if (rankList.length === 1 && rankList[0].score >= 1) {
+            console.log("a");
+            return rankList[0];
+        } else if (rankList.length >= 2 && rankList[0].score >= 2000) {
+            console.log("b");
+            return rankList[0];
+        } else {
+            console.log("c");
+            return undefined;
+        }
     }
 }
 
