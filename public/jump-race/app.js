@@ -64,7 +64,10 @@ function setup(nickName) {
         // 서버에서 랭크 업데이트 데이터 받음
         socket.on("rank", (data) => {
             rank.setRankList(data.list);
-            rank.winner(data.winner);
+            
+            if (data.winner != undefined) {
+                readyButton.use = true;
+            }
         });
 
         // key 이벤트

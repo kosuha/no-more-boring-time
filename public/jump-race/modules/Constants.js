@@ -1,3 +1,6 @@
+// TODO
+// 모든 플레이어, 게임 중 플레이어로 나누기
+
 const socket = io();
 
 let width = 0;

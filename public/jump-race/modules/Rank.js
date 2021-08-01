@@ -9,12 +9,6 @@ class Rank {
         this.rankList = rankList;
     }
 
-    winner(winPlayer) {
-        if (winPlayer != undefined) {
-            console.log("win: ", winPlayer);
-        }
-    }
-
     display() {
         ctx.font = (WIDTH * 12) / 400 + "px san-serif";
         let marginTop = 3;
