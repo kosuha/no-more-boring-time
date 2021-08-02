@@ -171,6 +171,7 @@ io.on("connection", async (socket) => {
                     player.positionX = 200 - this.width / 2;
                     player.positionY = 500 - this.height / 2;
                     player.ready = false;
+                    player.waiting = false;
                     player.getFlag = false;
                     rooms[data.roomId].inGamePlayers[player.id] = player;
                 }
@@ -178,8 +179,8 @@ io.on("connection", async (socket) => {
                     inGamePlayers: rooms[data.roomId].inGamePlayers,
                     flag: {
                         positionX: 290,
-                        positionY: 200
-                    }
+                        positionY: 200,
+                    },
                 });
             }
         }
@@ -208,17 +209,28 @@ io.on("connection", async (socket) => {
             rooms[data.room].rank.pushScore(data.player);
             const result = rooms[data.room].rank.totalRank();
             const winPlayer = rooms[data.room].rank.winner(result);
-            
+
             io.to(data.room).emit("rank", result);
 
             if (winPlayer != undefined) {
                 io.to(data.room).emit("win", winPlayer);
             }
-            
+
+            let readyFalseCount = 0;
+            if (rooms[data.room].gameStart === false) {
+                for (let player in rooms[data.room].members) {
+                    if (rooms[data.room].members[player].ready === false) {
+                        readyFalseCount++;
+                    }
+                }
+            }
+            let readyCount = Object.keys(rooms[data.room].members).length - readyFalseCount;
 
             socket.broadcast.to(data.room).emit("updatePosition", {
                 player: updatePlayer,
-                flag: rooms[data.room].flag
+                flag: rooms[data.room].flag,
+                gameStart: rooms[data.room].gameStart,
+                readyCount: readyCount
             });
         } catch (error) {
             io.to(socket.id).emit("redirect");
@@ -309,7 +321,7 @@ class Rank {
 
     pushScore(player) {
         if (player.waiting === false) {
-            let isPlayerInList = false
+            let isPlayerInList = false;
             for (let i = 0; i < this.rankList.length; i++) {
                 if (player.id === this.rankList[i].id) {
                     this.rankList[i].score = player.score;

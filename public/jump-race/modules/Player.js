@@ -38,7 +38,7 @@ class Player {
         this.positionX = positionX;
         this.positionY = positionY;
         this.getFlag = getFlag;
-        this.waiting = waiting
+        this.waiting = waiting;
     }
 
     display() {

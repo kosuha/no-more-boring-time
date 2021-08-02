@@ -31,7 +31,9 @@ const roomData = {
     roomId: undefined, // 방 ID
     players: {}, // 접속 중인 플레이어 목록
     inGamePlayers: {}, // 게임 중인 플레이어 목록 
-    flag: undefined // 깃발 Class가 담길 변수
+    flag: undefined, // 깃발 Class가 담길 변수
+    gameStart: false,
+    readyCount: 0
 };
 
 // 물리엔진

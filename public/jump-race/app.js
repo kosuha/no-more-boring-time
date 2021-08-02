@@ -45,21 +45,25 @@ function setup(nickName) {
             roomData.flag.velocityX = 0;
             roomData.flag.velocityY = 0;
             roomData.flag.taken = false;
+
+            roomData.gameStart = true;
         });
 
         // 서버에서 상태 업데이트 데이터 받음
         socket.on("updatePosition", (data) => {
+            console.log(data.player.waiting);
             roomData.players[data.player.id].setState(
                 (WIDTH * data.player.positionX) / 400,
                 (HEIGHT * data.player.positionY) / 700,
                 data.player.getFlag,
-                !(data.player.gameStart)
+                data.player.waiting
             );
             roomData.flag.setState(
                 (WIDTH * data.flag.positionX) / 400,
                 (HEIGHT * data.flag.positionY) / 700,
                 data.flag.taken
             );
+            roomData.gameStart = data.gameStart;
         });
 
         // 서버에서 랭크 업데이트 데이터 받음
@@ -70,6 +74,7 @@ function setup(nickName) {
         // 서버에서 승자 알림받음
         socket.on("win", (winner) => {
             console.log(winner);
+
         });
 
         // key 이벤트
