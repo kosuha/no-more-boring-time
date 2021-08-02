@@ -63,11 +63,12 @@ function setup(nickName) {
 
         // 서버에서 랭크 업데이트 데이터 받음
         socket.on("rank", (data) => {
-            rank.setRankList(data.list);
-            
-            if (data.winner != undefined) {
-                readyButton.use = true;
-            }
+            rank.setRankList(data);
+        });
+
+        // 서버에서 승자 알림받음
+        socket.on("win", (winner) => {
+            console.log(winner);
         });
 
         // key 이벤트
