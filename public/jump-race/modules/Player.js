@@ -34,10 +34,11 @@ class Player {
     }
 
     // 상태 업데이트
-    setState(positionX, positionY, getFlag) {
+    setState(positionX, positionY, getFlag, waiting) {
         this.positionX = positionX;
         this.positionY = positionY;
         this.getFlag = getFlag;
+        this.waiting = waiting
     }
 
     display() {

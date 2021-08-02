@@ -52,7 +52,8 @@ function setup(nickName) {
             roomData.players[data.player.id].setState(
                 (WIDTH * data.player.positionX) / 400,
                 (HEIGHT * data.player.positionY) / 700,
-                data.player.getFlag
+                data.player.getFlag,
+                !(data.player.gameStart)
             );
             roomData.flag.setState(
                 (WIDTH * data.flag.positionX) / 400,
