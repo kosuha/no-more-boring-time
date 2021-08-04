@@ -30,7 +30,6 @@ const HEIGHT = canvas.height;
 const roomData = {
     roomId: undefined, // 방 ID
     players: {}, // 접속 중인 플레이어 목록
-    inGamePlayers: {}, // 게임 중인 플레이어 목록 
     flag: undefined, // 깃발 Class가 담길 변수
     gameStart: false,
     readyCount: 0
@@ -47,13 +46,15 @@ const inviteButton = new Button(
     (WIDTH * 5) / 400,
     (HEIGHT * 5) / 700,
     (WIDTH * 54) / 400,
-    (HEIGHT * 30) / 700
+    (HEIGHT * 30) / 700,
+    "친구초대"
 );
 const readyButton = new Button(
     (WIDTH * 100) / 400,
     (HEIGHT * 5) / 700,
     (WIDTH * 54) / 400,
-    (HEIGHT * 30) / 700
+    (HEIGHT * 30) / 700,
+    "준비(0/0)"
 );
 
 // 벽

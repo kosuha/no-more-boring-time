@@ -29,6 +29,10 @@ function setup(nickName) {
                 roomData.flag.drop();
             }
             delete roomData.players[id];
+            
+            socket.emit("ready", {
+                roomId: roomData.roomId,
+            });
         });
 
         // 시작 신호 받음
@@ -74,7 +78,12 @@ function setup(nickName) {
         // 서버에서 승자 알림받음
         socket.on("win", (winner) => {
             console.log(winner);
-
+            for (let id in roomData.players) {
+                roomData.players[id].score = 0;
+                roomData.players[id].waiting = true;
+                roomData.players[id].getFlag = false;
+                readyButton.use = true;
+            }
         });
 
         // key 이벤트
@@ -176,8 +185,9 @@ function draw() {
     wallRight.display();
 
     // canvas에 버튼 생성
-    inviteButton.display("친구초대");
-    readyButton.display("준비");
+    inviteButton.display();
+    readyButton.setText()
+    readyButton.display();
 
     // canvas에 바닥 생성
     for (let i = 0; i < floor.length; i++) {

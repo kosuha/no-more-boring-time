@@ -1,11 +1,11 @@
 class Button {
-    constructor(positionX, positionY, width, height) {
+    constructor(positionX, positionY, width, height, text) {
         this.positionX = positionX;
         this.positionY = positionY;
         this.width = width;
         this.height = height;
         this.use = true;
-        this.text = "";
+        this.text = text;
     }
 
     // 마우스 포지션이 버튼 안에 있는지 체크
@@ -19,9 +19,6 @@ class Button {
     }
 
     display() {
-        if (this.use === true) {
-            this.text = "준비(0/0)";
-        }
         ctx.fillStyle = "rgba(0, 255, 0, 0.2)";
         ctx.fillRect(this.positionX, this.positionY, this.width, this.height);
         ctx.lineWidth = (WIDTH * 1) / 400;
@@ -34,5 +31,13 @@ class Button {
             this.positionX + (WIDTH * 6) / 400,
             this.positionY + (WIDTH * 18) / 400
         );
+    }
+
+    setText() {
+        if (this.use === true) {
+            this.text = "준비(0/0)";
+        } else {
+            this.text = "준비완료(0/0)";
+        }
     }
 }

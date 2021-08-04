@@ -213,7 +213,18 @@ io.on("connection", async (socket) => {
             io.to(data.room).emit("rank", result);
 
             if (winPlayer != undefined) {
-                io.to(data.room).emit("win", winPlayer);
+                const inGamePlayers = rooms[data.room].inGamePlayers
+                if (rooms[data.room].gameStart === true) {
+                    io.to(data.room).emit("win", winPlayer);
+                }
+                
+                for(let id in inGamePlayers) {
+                    inGamePlayers[id].getFlag = false;
+                    inGamePlayers[id].ready = false;
+                    inGamePlayers[id].waiting = true;
+                }
+
+                rooms[data.room].gameStart = false;
             }
 
             let readyFalseCount = 0;
@@ -224,13 +235,14 @@ io.on("connection", async (socket) => {
                     }
                 }
             }
-            let readyCount = Object.keys(rooms[data.room].members).length - readyFalseCount;
+            let readyCount =
+                Object.keys(rooms[data.room].members).length - readyFalseCount;
 
             socket.broadcast.to(data.room).emit("updatePosition", {
                 player: updatePlayer,
                 flag: rooms[data.room].flag,
                 gameStart: rooms[data.room].gameStart,
-                readyCount: readyCount
+                readyCount: readyCount,
             });
         } catch (error) {
             io.to(socket.id).emit("redirect");
