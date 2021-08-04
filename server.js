@@ -150,44 +150,47 @@ io.on("connection", async (socket) => {
     socket.on("ready", (data) => {
         if (rooms[data.roomId] != undefined) {
             rooms[data.roomId].members[socket.id].ready = true;
+        }
+    });
 
+    socket.on("updatePosition", (data) => {
+        try {
+            // ready check
             let readyFalseCount = 0;
-            for (let player in rooms[data.roomId].members) {
-                if (rooms[data.roomId].members[player].ready === false) {
+            for (let player in rooms[data.room].members) {
+                if (rooms[data.room].members[player].ready === false) {
                     readyFalseCount++;
                 }
             }
 
+            console.log(readyFalseCount);
+
             if (readyFalseCount === 0) {
                 console.log("ready all!");
-                rooms[data.roomId].gameStart = true;
-                rooms[data.roomId].flag.positionX = 290;
-                rooms[data.roomId].flag.positionY = 200;
-                rooms[data.roomId].flag.taken = false;
-                rooms[data.roomId].rank.rankList = [];
+                rooms[data.room].gameStart = true;
+                rooms[data.room].flag.positionX = 290;
+                rooms[data.room].flag.positionY = 200;
+                rooms[data.room].flag.taken = false;
+                rooms[data.room].rank.rankList = [];
 
-                for (let playerId in rooms[data.roomId].members) {
-                    const player = rooms[data.roomId].members[playerId];
+                for (let playerId in rooms[data.room].members) {
+                    const player = rooms[data.room].members[playerId];
                     player.positionX = 200 - this.width / 2;
                     player.positionY = 500 - this.height / 2;
                     player.ready = false;
                     player.waiting = false;
                     player.getFlag = false;
-                    rooms[data.roomId].inGamePlayers[player.id] = player;
+                    rooms[data.room].inGamePlayers[player.id] = player;
                 }
                 io.to(socket.gameData.joinedRoomId).emit("start", {
-                    inGamePlayers: rooms[data.roomId].inGamePlayers,
+                    inGamePlayers: rooms[data.room].inGamePlayers,
                     flag: {
                         positionX: 290,
                         positionY: 200,
                     },
                 });
             }
-        }
-    });
 
-    socket.on("updatePosition", (data) => {
-        try {
             const flagPositionX =
                 (data.flag.positionX / data.flag.canvasSize.x) * 400;
             const flagPositionY =
@@ -213,28 +216,28 @@ io.on("connection", async (socket) => {
             io.to(data.room).emit("rank", result);
 
             if (winPlayer != undefined) {
-                const inGamePlayers = rooms[data.room].inGamePlayers
+                const players = rooms[data.room].members;
                 if (rooms[data.room].gameStart === true) {
                     io.to(data.room).emit("win", winPlayer);
                 }
-                
-                for(let id in inGamePlayers) {
-                    inGamePlayers[id].getFlag = false;
-                    inGamePlayers[id].ready = false;
-                    inGamePlayers[id].waiting = true;
+
+                for (let id in players) {
+                    players[id].getFlag = false;
+                    players[id].ready = false;
+                    players[id].waiting = true;
                 }
 
                 rooms[data.room].gameStart = false;
             }
 
-            let readyFalseCount = 0;
-            if (rooms[data.room].gameStart === false) {
-                for (let player in rooms[data.room].members) {
-                    if (rooms[data.room].members[player].ready === false) {
-                        readyFalseCount++;
-                    }
-                }
-            }
+            // let readyFalseCount = 0;
+            // if (rooms[data.room].gameStart === false) {
+            //     for (let player in rooms[data.room].members) {
+            //         if (rooms[data.room].members[player].ready === false) {
+            //             readyFalseCount++;
+            //         }
+            //     }
+            // }
             let readyCount =
                 Object.keys(rooms[data.room].members).length - readyFalseCount;
 

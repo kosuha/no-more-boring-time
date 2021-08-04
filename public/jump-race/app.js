@@ -29,10 +29,6 @@ function setup(nickName) {
                 roomData.flag.drop();
             }
             delete roomData.players[id];
-            
-            socket.emit("ready", {
-                roomId: roomData.roomId,
-            });
         });
 
         // 시작 신호 받음
@@ -200,14 +196,12 @@ function draw() {
         for (let player_ in roomData.players) {
             if (player != player_ && doneList.includes(player_) === false) {
                 // 인게임 플레이어 충돌 적용
-                if (player.waiting === false && player_.waiting === false) {
-                    console.log("collision!");
-                    physics.useCollisionWithPlayer(
-                        roomData.players[player],
-                        roomData.players[player_],
-                        roomData.flag
-                    );
-                }
+                console.log("collision!");
+                physics.useCollisionWithPlayer(
+                    roomData.players[player],
+                    roomData.players[player_],
+                    roomData.flag
+                );
             }
         }
         doneList.push(player);

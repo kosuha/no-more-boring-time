@@ -42,28 +42,30 @@ class Physics {
 
     // 플레이어간 충돌
     useCollisionWithPlayer(a, b, flag) {
-        const dist = this.distance(a, b);
-        const power = a.width - dist;
-
-        if (this.distance(a, b) < a.width) {
-            a.getFlag = false;
-            b.getFlag = false;
-            flag.drop();
-
-            if (a.positionX > b.positionX) {
-                a.velocityX += (HEIGHT * power * 2) / 700;
-                b.velocityX -= (HEIGHT * power * 2) / 700;
-            } else if (a.positionX < b.positionX) {
-                a.velocityX -= (HEIGHT * power * 2) / 700;
-                b.velocityX += (HEIGHT * power * 2) / 700;
-            }
-
-            if (a.positionY < b.positionY) {
-                a.velocityY -= (HEIGHT * power * 2) / 700;
-                b.velocityY += (HEIGHT * power * 2) / 700;
-            } else if (a.positionY > b.positionY) {
-                a.velocityY += (HEIGHT * power * 2) / 700;
-                b.velocityY -= (HEIGHT * power * 2) / 700;
+        if (a.waiting === false && b.waiting === false) {
+            const dist = this.distance(a, b);
+            const power = a.width - dist;
+    
+            if (this.distance(a, b) < a.width) {
+                a.getFlag = false;
+                b.getFlag = false;
+                flag.drop();
+    
+                if (a.positionX > b.positionX) {
+                    a.velocityX += (HEIGHT * power * 2) / 700;
+                    b.velocityX -= (HEIGHT * power * 2) / 700;
+                } else if (a.positionX < b.positionX) {
+                    a.velocityX -= (HEIGHT * power * 2) / 700;
+                    b.velocityX += (HEIGHT * power * 2) / 700;
+                }
+    
+                if (a.positionY < b.positionY) {
+                    a.velocityY -= (HEIGHT * power * 2) / 700;
+                    b.velocityY += (HEIGHT * power * 2) / 700;
+                } else if (a.positionY > b.positionY) {
+                    a.velocityY += (HEIGHT * power * 2) / 700;
+                    b.velocityY -= (HEIGHT * power * 2) / 700;
+                }
             }
         }
     }
