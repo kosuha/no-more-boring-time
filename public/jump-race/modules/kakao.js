@@ -9,8 +9,8 @@ function inviteKakao() {
             description: "Jump Race에 초대되었습니다.",
             imageUrl: "",
             link: {
-                webUrl: "http://ec2-3-35-14-224.ap-northeast-2.compute.amazonaws.com/jump-race/?room=" + roomId,
-                mobileWebUrl: "http://ec2-3-35-14-224.ap-northeast-2.compute.amazonaws.com/jump-race/?room=" + roomId,
+                webUrl: "http://ec2-3-35-14-224.ap-northeast-2.compute.amazonaws.com/jump-race/?room=" + roomData.roomId,
+                mobileWebUrl: "http://ec2-3-35-14-224.ap-northeast-2.compute.amazonaws.com/jump-race/?room=" + roomData.roomId,
                 androidExecParams: "test",
             },
         },
