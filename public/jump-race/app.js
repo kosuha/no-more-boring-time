@@ -20,7 +20,7 @@ function setup(nickName) {
             nickName: nickName,
         });
 
-        // 접속 종료 서버에 알림, 객체 제거
+        // 접속 종료, 객체 제거
         socket.on("disconnected", (id) => {
             if (
                 roomData.players[id] != undefined &&
