@@ -247,6 +247,12 @@ io.on("connection", async (socket) => {
                 gameStart: rooms[data.room].gameStart,
                 readyCount: readyCount,
             });
+
+            io.to(data.room).emit("updateRoom", {
+                gameStart: rooms[data.room].gameStart,
+                readyCount: readyCount,
+            });
+            
         } catch (error) {
             io.to(socket.id).emit("redirect");
             console.log("ERROR:updatePosition: ", error);

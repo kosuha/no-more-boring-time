@@ -51,7 +51,6 @@ function setup(nickName) {
 
         // 서버에서 상태 업데이트 데이터 받음
         socket.on("updatePosition", (data) => {
-            console.log(data.player.waiting);
             roomData.players[data.player.id].setState(
                 (WIDTH * data.player.positionX) / 400,
                 (HEIGHT * data.player.positionY) / 700,
@@ -66,6 +65,11 @@ function setup(nickName) {
             roomData.gameStart = data.gameStart;
         });
 
+        socket.on("updateRoom", (data) => {
+            console.log(data.gameStart);
+            roomData.gameStart = data.gameStart;
+        });
+
         // 서버에서 랭크 업데이트 데이터 받음
         socket.on("rank", (data) => {
             rank.setRankList(data);
@@ -73,7 +77,6 @@ function setup(nickName) {
 
         // 서버에서 승자 알림받음
         socket.on("win", (winner) => {
-            console.log(winner);
             for (let id in roomData.players) {
                 roomData.players[id].score = 0;
                 roomData.players[id].waiting = true;
@@ -132,7 +135,6 @@ function setup(nickName) {
                     socket.emit("ready", {
                         roomId: roomData.roomId,
                     });
-                    console.log("ready click");
                 }
             },
             false
@@ -196,7 +198,6 @@ function draw() {
         for (let player_ in roomData.players) {
             if (player != player_ && doneList.includes(player_) === false) {
                 // 인게임 플레이어 충돌 적용
-                console.log("collision!");
                 physics.useCollisionWithPlayer(
                     roomData.players[player],
                     roomData.players[player_],
