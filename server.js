@@ -147,50 +147,8 @@ io.on("connection", async (socket) => {
         console.log(rooms[data.roomId].getMembers());
     });
 
-    socket.on("ready", (data) => {
-        if (rooms[data.roomId] != undefined) {
-            rooms[data.roomId].members[socket.id].ready = true;
-        }
-    });
-
     socket.on("updatePosition", (data) => {
         try {
-            // ready check
-            let readyFalseCount = 0;
-            for (let player in rooms[data.room].members) {
-                if (rooms[data.room].members[player].ready === false) {
-                    readyFalseCount++;
-                }
-            }
-
-            console.log(readyFalseCount);
-
-            if (readyFalseCount === 0) {
-                console.log("ready all!");
-                rooms[data.room].gameStart = true;
-                rooms[data.room].flag.positionX = 290;
-                rooms[data.room].flag.positionY = 200;
-                rooms[data.room].flag.taken = false;
-                rooms[data.room].rank.rankList = [];
-
-                for (let playerId in rooms[data.room].members) {
-                    const player = rooms[data.room].members[playerId];
-                    player.positionX = 200 - this.width / 2;
-                    player.positionY = 500 - this.height / 2;
-                    player.ready = false;
-                    player.waiting = false;
-                    player.getFlag = false;
-                    rooms[data.room].inGamePlayers[player.id] = player;
-                }
-                io.to(socket.gameData.joinedRoomId).emit("start", {
-                    inGamePlayers: rooms[data.room].inGamePlayers,
-                    flag: {
-                        positionX: 290,
-                        positionY: 200,
-                    },
-                });
-            }
-
             const flagPositionX =
                 (data.flag.positionX / data.flag.canvasSize.x) * 400;
             const flagPositionY =
@@ -230,25 +188,9 @@ io.on("connection", async (socket) => {
                 rooms[data.room].gameStart = false;
             }
 
-            // let readyFalseCount = 0;
-            // if (rooms[data.room].gameStart === false) {
-            //     for (let player in rooms[data.room].members) {
-            //         if (rooms[data.room].members[player].ready === false) {
-            //             readyFalseCount++;
-            //         }
-            //     }
-            // }
-            let readyCount =
-                Object.keys(rooms[data.room].members).length - readyFalseCount;
-
             socket.broadcast.to(data.room).emit("updatePosition", {
                 player: updatePlayer,
                 flag: rooms[data.room].flag,
-                gameStart: rooms[data.room].gameStart,
-                readyCount: readyCount,
-            });
-
-            io.to(data.room).emit("updateRoom", {
                 gameStart: rooms[data.room].gameStart,
                 readyCount: readyCount,
             });

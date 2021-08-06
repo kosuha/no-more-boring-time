@@ -31,24 +31,6 @@ function setup(nickName) {
             delete roomData.players[id];
         });
 
-        // 시작 신호 받음
-        socket.on("start", (data) => {
-            console.log(data.inGamePlayers);
-            for (let id in data.inGamePlayers) {
-                roomData.players[id].waiting = false;
-                roomData.players[id].score = 0;
-                roomData.players[id].getFlag = false;
-            }
-
-            roomData.flag.positionX = (WIDTH * data.flag.positionX) / 400;
-            roomData.flag.positionY = (HEIGHT * data.flag.positionY) / 700;
-            roomData.flag.velocityX = 0;
-            roomData.flag.velocityY = 0;
-            roomData.flag.taken = false;
-
-            roomData.gameStart = true;
-        });
-
         // 서버에서 상태 업데이트 데이터 받음
         socket.on("updatePosition", (data) => {
             roomData.players[data.player.id].setState(
@@ -62,11 +44,6 @@ function setup(nickName) {
                 (HEIGHT * data.flag.positionY) / 700,
                 data.flag.taken
             );
-            roomData.gameStart = data.gameStart;
-        });
-
-        socket.on("updateRoom", (data) => {
-            console.log(data.gameStart);
             roomData.gameStart = data.gameStart;
         });
 
