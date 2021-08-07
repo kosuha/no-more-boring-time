@@ -32,27 +32,27 @@ function setup(nickName) {
         });
 
         // 서버에서 상태 업데이트 데이터 받음
-        socket.on("updatePosition", (data) => {
+        socket.on("updatePlayerPosition", (data) => {
             roomData.players[data.player.id].setState(
                 (WIDTH * data.player.positionX) / 400,
                 (HEIGHT * data.player.positionY) / 700,
                 data.player.getFlag,
                 data.player.waiting
             );
+        });
+
+        socket.on("updateFlagPosition", (data) => {
             roomData.flag.setState(
                 (WIDTH * data.flag.positionX) / 400,
                 (HEIGHT * data.flag.positionY) / 700,
                 data.flag.taken
             );
-            roomData.gameStart = data.gameStart;
         });
 
-        // 서버에서 랭크 업데이트 데이터 받음
-        socket.on("rank", (data) => {
+        socket.on("updateScore", (data) => {
             rank.setRankList(data);
         });
 
-        // 서버에서 승자 알림받음
         socket.on("win", (winner) => {
             for (let id in roomData.players) {
                 roomData.players[id].score = 0;
@@ -60,6 +60,8 @@ function setup(nickName) {
                 roomData.players[id].getFlag = false;
                 readyButton.use = true;
             }
+
+            // TODO 게임 종료 후 상태
         });
 
         // key 이벤트
@@ -235,10 +237,16 @@ function draw() {
     rank.display();
 
     // 서버로 업데이트 데이터 보냄
-    socket.emit("updatePosition", {
-        room: roomData.roomId,
-        player: roomData.players[socket.id],
-        flag: roomData.flag,
+    socket.emit("updatePlayerPosition", {
+        player: roomData.players[socket.id]
+    });
+
+    socket.emit("updateFlagPosition", {
+        flag: roomData.flag
+    });
+
+    socket.emit("updateScore", {
+        player: roomData.players[socket.id]
     });
 }
 

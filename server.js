@@ -156,7 +156,7 @@ io.on("connection", async (socket) => {
         const result = rooms[data.room].rank.totalRank();
         const winPlayer = rooms[data.room].rank.winner(result);
 
-        io.to(data.room).emit("rank", result);
+        io.to(data.room).emit("updateScore", result);
 
         if (winPlayer != undefined) {
             const players = rooms[data.room].members;
