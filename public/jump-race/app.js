@@ -110,7 +110,7 @@ function setup(nickName) {
                 ) {
                     readyButton.use = false;
                     socket.emit("ready", {
-                        roomId: roomData.roomId,
+                        room: roomData.roomId,
                     });
                 }
             },

@@ -147,6 +147,10 @@ io.on("connection", async (socket) => {
         console.log(rooms[data.roomId].getMembers());
     });
 
+    socket.on("ready", (data) => {
+        rooms[data.room].members[socket.id].ready = true;
+    });
+
     socket.on("updatePosition", (data) => {
         try {
             const flagPositionX =
