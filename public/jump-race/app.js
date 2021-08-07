@@ -327,7 +327,7 @@ window.onload = () => {
     }
 
     // 서버 에러 발생 시 처리
-    socket.on("redirect", () => {
+    socket.on("error", () => {
         socket.disconnect();
         const roomCheck = confirm("서버 종료");
 

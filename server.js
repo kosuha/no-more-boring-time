@@ -151,19 +151,44 @@ io.on("connection", async (socket) => {
         rooms[data.room].members[socket.id].ready = true;
     });
 
-    socket.on("updatePosition", (data) => {
+    socket.on("updateScore", (data) => {
+        rooms[data.room].rank.pushScore(data.player);
+        const result = rooms[data.room].rank.totalRank();
+        const winPlayer = rooms[data.room].rank.winner(result);
+
+        io.to(data.room).emit("rank", result);
+
+        if (winPlayer != undefined) {
+            const players = rooms[data.room].members;
+            if (rooms[data.room].gameStart === true) {
+                io.to(data.room).emit("win", winPlayer);
+            }
+
+            for (let id in players) {
+                players[id].getFlag = false;
+                players[id].ready = false;
+                players[id].waiting = true;
+            }
+
+            rooms[data.room].gameStart = false;
+        }
+    });
+
+    socket.on("updateFlagPosition", (data) => {
+        const flagPositionX =
+            (data.flag.positionX / data.flag.canvasSize.x) * 400;
+        const flagPositionY =
+            (data.flag.positionY / data.flag.canvasSize.y) * 700;
+
+        rooms[data.room].flag.setState(
+            flagPositionX,
+            flagPositionY,
+            data.flag.taken
+        );
+    });
+
+    socket.on("updatePlayerPosition", (data) => {
         try {
-            const flagPositionX =
-                (data.flag.positionX / data.flag.canvasSize.x) * 400;
-            const flagPositionY =
-                (data.flag.positionY / data.flag.canvasSize.y) * 700;
-
-            rooms[data.room].flag.setState(
-                flagPositionX,
-                flagPositionY,
-                data.flag.taken
-            );
-
             const updatePlayer = rooms[data.room].getMembers()[socket.id];
             const positionX =
                 (data.player.positionX / data.player.canvasSize.x) * 400;
@@ -171,36 +196,11 @@ io.on("connection", async (socket) => {
                 (data.player.positionY / data.player.canvasSize.y) * 700;
             updatePlayer.setState(positionX, positionY, data.player.getFlag);
 
-            rooms[data.room].rank.pushScore(data.player);
-            const result = rooms[data.room].rank.totalRank();
-            const winPlayer = rooms[data.room].rank.winner(result);
-
-            io.to(data.room).emit("rank", result);
-
-            if (winPlayer != undefined) {
-                const players = rooms[data.room].members;
-                if (rooms[data.room].gameStart === true) {
-                    io.to(data.room).emit("win", winPlayer);
-                }
-
-                for (let id in players) {
-                    players[id].getFlag = false;
-                    players[id].ready = false;
-                    players[id].waiting = true;
-                }
-
-                rooms[data.room].gameStart = false;
-            }
-
-            socket.broadcast.to(data.room).emit("updatePosition", {
-                player: updatePlayer,
-                flag: rooms[data.room].flag,
-                gameStart: rooms[data.room].gameStart,
-                readyCount: readyCount,
+            socket.broadcast.to(data.room).emit("updatePlayerPosition", {
+                player: updatePlayer
             });
-            
         } catch (error) {
-            io.to(socket.id).emit("redirect");
+            io.to(socket.id).emit("error");
             console.log("ERROR:updatePosition: ", error);
         }
     });
