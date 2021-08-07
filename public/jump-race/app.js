@@ -238,14 +238,17 @@ function draw() {
 
     // 서버로 업데이트 데이터 보냄
     socket.emit("updatePlayerPosition", {
+        room: roomData.roomId,
         player: roomData.players[socket.id]
     });
 
     socket.emit("updateFlagPosition", {
+        room: roomData.roomId,
         flag: roomData.flag
     });
 
     socket.emit("updateScore", {
+        room: roomData.roomId,
         player: roomData.players[socket.id]
     });
 }
