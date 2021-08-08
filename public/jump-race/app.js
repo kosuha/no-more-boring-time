@@ -32,16 +32,14 @@ function setup(nickName) {
         });
 
         // 서버에서 상태 업데이트 데이터 받음
-        socket.on("updatePlayerPosition", (data) => {
+        socket.on("update", (data) => {
             roomData.players[data.player.id].setState(
                 (WIDTH * data.player.positionX) / 400,
                 (HEIGHT * data.player.positionY) / 700,
                 data.player.getFlag,
                 data.player.waiting
             );
-        });
 
-        socket.on("updateFlagPosition", (data) => {
             roomData.flag.setState(
                 (WIDTH * data.flag.positionX) / 400,
                 (HEIGHT * data.flag.positionY) / 700,
@@ -237,18 +235,10 @@ function draw() {
     rank.display();
 
     // 서버로 업데이트 데이터 보냄
-    socket.emit("updatePlayerPosition", {
+    socket.emit("update", {
         room: roomData.roomId,
-        player: roomData.players[socket.id]
-    });
-
-    socket.emit("updateFlagPosition", {
-        room: roomData.roomId,
-        flag: roomData.flag
-    });
-
-    socket.emit("updateScore", {
-        room: roomData.roomId,
+        player: roomData.players[socket.id],
+        flag: roomData.flag,
         player: roomData.players[socket.id]
     });
 }
