@@ -52,6 +52,7 @@ class Player {
 
         // 닉네임
         ctx.font = (WIDTH * 12) / 400 + "px san-serif";
+        ctx.textAlign = "left";
         ctx.fillText(
             this.nickName,
             this.positionX,

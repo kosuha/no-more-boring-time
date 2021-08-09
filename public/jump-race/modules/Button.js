@@ -26,18 +26,19 @@ class Button {
 
         ctx.fillStyle = "rgb(0, 0, 0)";
         ctx.font = (WIDTH * 12) / 400 + "px san-serif";
+        ctx.textAlign = "center";
         ctx.fillText(
             this.text,
-            this.positionX + (WIDTH * 6) / 400,
-            this.positionY + (WIDTH * 18) / 400
+            this.positionX + this.width / 2,
+            this.positionY + this.height / 2
         );
     }
 
     setText() {
         if (this.use === true) {
-            this.text = "준비(0/0)";
+            this.text = "준비";
         } else {
-            this.text = "준비완료(0/0)";
+            this.text = "준비완료";
         }
     }
 }

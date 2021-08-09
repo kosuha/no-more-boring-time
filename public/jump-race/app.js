@@ -31,6 +31,13 @@ function setup(nickName) {
             delete roomData.players[id];
         });
 
+        socket.on("start", (players) => {
+            winnerText.use = false;
+            for(let id in players) {
+                roomData.players[id].waiting = false;
+            }
+        });
+
         // 서버에서 상태 업데이트 데이터 받음
         socket.on("update", (data) => {
             roomData.players[data.player.id].setState(
@@ -60,6 +67,9 @@ function setup(nickName) {
             }
 
             // TODO 게임 종료 후 상태
+            const text = `${winner.nickName} 승리!`
+            winnerText.display(text);
+            winnerText.use = true;
         });
 
         // key 이벤트

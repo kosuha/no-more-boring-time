@@ -148,11 +148,25 @@ io.on("connection", async (socket) => {
     });
 
     socket.on("ready", (data) => {
-        rooms[data.room].members[socket.id].ready = true;
+        if (rooms[data.room].gameStart === false) {
+            rooms[data.room].members[socket.id].ready = true;    
+        }
     });
 
     socket.on("update", (data) => {
         try {
+            let readyCheck = 0;
+            for (let id in rooms[data.room].members) {
+                if (rooms[data.room].members[id].ready) {
+                    readyCheck++;
+                }
+            }
+            if (Object.keys(rooms[data.room].members).length === readyCheck) {
+                io.to(data.room).emit("start", rooms[data.room].members);
+                rooms[data.room].gameStart = true;
+            }
+            
+
             const flagPositionX =
                 (data.flag.positionX / data.flag.canvasSize.x) * 400;
             const flagPositionY =
@@ -183,6 +197,7 @@ io.on("connection", async (socket) => {
                 }
 
                 rooms[data.room].gameStart = false;
+                rooms[data.room].rank.rankList = [];
             }
 
             const updatePlayer = rooms[data.room].getMembers()[socket.id];
@@ -190,10 +205,11 @@ io.on("connection", async (socket) => {
                 (data.player.positionX / data.player.canvasSize.x) * 400;
             const positionY =
                 (data.player.positionY / data.player.canvasSize.y) * 700;
-            updatePlayer.setState(positionX, positionY, data.player.getFlag);
+            updatePlayer.setState(positionX, positionY, data.player.getFlag, data.player.waiting);
 
             socket.broadcast.to(data.room).emit("update", {
                 player: updatePlayer,
+                flag: rooms[data.room].flag
             });
         } catch (error) {
             io.to(socket.id).emit("error");
@@ -256,10 +272,11 @@ class Player {
         return this.id;
     }
 
-    setState(positionX, positionY, getFlag) {
+    setState(positionX, positionY, getFlag, waiting) {
         this.positionX = positionX;
         this.positionY = positionY;
         this.getFlag = getFlag;
+        this.waiting = waiting;
     }
 }
 
@@ -314,13 +331,13 @@ class Rank {
 
     winner(rankList) {
         if (rankList.length === 1 && rankList[0].score >= 1) {
-            console.log("a");
+            // console.log("a");
             return rankList[0];
         } else if (rankList.length >= 2 && rankList[0].score >= 2000) {
-            console.log("b");
+            // console.log("b");
             return rankList[0];
         } else {
-            console.log("c");
+            // console.log("c");
             return undefined;
         }
     }
