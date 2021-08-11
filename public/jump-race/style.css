@@ -44,9 +44,30 @@ canvas {
     padding: 5px;
 }
 
-#popup > #popup_title > input {
+#popup > #popup_content > input {
     height: fit-content;
-    font-size: 20px;
+    font-size: 16px;
+}
+
+#popup > #popup_content > button {
+    height: fit-content;
+    font-size: 16px;
+}
+
+#popup > #popup_desc {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    align-content: center;
+    justify-content: center;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.5);
+}
+
+#popup > #popup_desc > #popup_desc_content {
+    font-size: 12px;
+    padding: 0.5rem;
 }
 
 #keys {
