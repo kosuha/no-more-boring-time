@@ -69,6 +69,16 @@ class Player {
                 this.height + (WIDTH * 10) / 400
             );
 
+            if (this.id === socket.id) {
+                ctx.strokeStyle = "green";
+                ctx.strokeRect(
+                    this.positionX + (WIDTH * 5) / 400,
+                    this.positionY,
+                    this.width - (WIDTH * 10) / 400,
+                    this.height + (WIDTH * 10) / 400
+                );
+            }
+
             // 왼쪽 눈
             ctx.lineWidth = (WIDTH * 2) / 400;
             ctx.strokeStyle = "black";
@@ -110,6 +120,16 @@ class Player {
                 this.width,
                 this.height
             );
+
+            if (this.id === socket.id) {
+                ctx.strokeStyle = "green";
+                ctx.strokeRect(
+                    this.positionX,
+                    this.positionY,
+                    this.width,
+                    this.height
+                );
+            }
 
             // 왼쪽, 오른쪽 눈
             ctx.fillStyle = "white";
