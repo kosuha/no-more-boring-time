@@ -43,7 +43,7 @@ class Player {
 
     display() {
         if (this.waiting === true) {
-            ctx.globalAlpha = "0.1";
+            ctx.globalAlpha = "0.3";
         } else {
             ctx.globalAlpha = "1.0";
         }
