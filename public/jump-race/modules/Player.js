@@ -70,6 +70,7 @@ class Player {
             );
 
             if (this.id === socket.id) {
+                ctx.filter = 'blur(2px)';
                 ctx.strokeStyle = "green";
                 ctx.strokeRect(
                     this.positionX + (WIDTH * 5) / 400,
@@ -77,6 +78,7 @@ class Player {
                     this.width - (WIDTH * 10) / 400,
                     this.height + (WIDTH * 10) / 400
                 );
+                ctx.filter = 'none';
             }
 
             // 왼쪽 눈
@@ -122,6 +124,7 @@ class Player {
             );
 
             if (this.id === socket.id) {
+                ctx.filter = 'blur(2px)';
                 ctx.strokeStyle = "green";
                 ctx.strokeRect(
                     this.positionX,
@@ -129,6 +132,7 @@ class Player {
                     this.width,
                     this.height
                 );
+                ctx.filter = 'none';
             }
 
             // 왼쪽, 오른쪽 눈
