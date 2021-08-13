@@ -66,10 +66,11 @@ function setup(nickName) {
                 readyButton.use = true;
             }
 
-            // TODO 게임 종료 후 상태
-            const text = `${winner.nickName} 승리!`
-            winnerText.display(text);
+            // 게임 종료 후 상태
+            winnerText.text = `${winner.nickName} 승리!`
             winnerText.use = true;
+            winnerText.color = winner.color;
+            
         });
 
         // key 이벤트
@@ -240,6 +241,9 @@ function draw() {
     for (let i = 0; i < floor.length; i++) {
         physics.useCollisionWithFloor(roomData.flag, floor[i]);
     }
+    
+    // 승자 알림
+    winnerText.display();
 
     // 랭크
     rank.display();

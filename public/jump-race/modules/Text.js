@@ -1,17 +1,23 @@
 class Text {
     constructor() {
         this.text = "";
-        this.use = true;
+        this.use = false;
         this.positionX = WIDTH / 2;
         this.positionY = HEIGHT / 2;
+        this.color = "rgb(0, 0, 0)";
     }
 
-    display(winner) {
+    display() {
         if (this.use === true) {
-            ctx.fillStyle = "rgb(0, 0, 0)";
-            ctx.font = (WIDTH * 12) / 400 + "px san-serif";
+            console.log("test!!!", this.text);
+            ctx.fillStyle = this.color;
+            ctx.font = (WIDTH * 30) / 400 + "px san-serif";
             ctx.textAlign = "center";
-            ctx.fillText(winner, this.positionX, this.positionY);
+            ctx.fillText(this.text, this.positionX, this.positionY);
+
+            setTimeout(() => {
+                this.use = false;
+            }, 3000);
         }
     }
 }
