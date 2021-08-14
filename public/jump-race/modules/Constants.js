@@ -101,5 +101,11 @@ floor[4] = new Platform(
     (WIDTH * 150) / 400,
     (HEIGHT * 40) / 700
 );
+floor[5] = new Platform(
+    (WIDTH * 100) / 400,
+    (HEIGHT * 150) / 700,
+    (WIDTH * 100) / 400,
+    (HEIGHT * 40) / 700
+);
 
 const winnerText = new Text();
