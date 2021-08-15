@@ -1,5 +1,6 @@
 // TODO
 // 리팩토링
+// 세부페이지로 바로 들어갔을때 로그인 시키기
 
 const express = require("express");
 const bodyParser = require("body-parser");
