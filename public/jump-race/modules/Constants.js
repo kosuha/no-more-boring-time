@@ -1,6 +1,3 @@
-// TODO
-// 점프 시 플레이어 테두리 변경 현상 해결 
-
 const socket = io();
 
 let width = 0;
