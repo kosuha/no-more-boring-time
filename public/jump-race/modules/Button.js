@@ -20,7 +20,7 @@ class Button {
 
     display() {
         ctx.strokeStyle = "black";
-        ctx.fillStyle = "rgba(0, 255, 0, 0.2)";
+        ctx.fillStyle = "rgba(0, 0, 0, 0.2)";
         ctx.fillRect(this.positionX, this.positionY, this.width, this.height);
         ctx.lineWidth = (WIDTH * 1) / 400;
         ctx.strokeRect(this.positionX, this.positionY, this.width, this.height);
