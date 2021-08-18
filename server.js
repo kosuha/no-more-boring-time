@@ -25,9 +25,16 @@ const randomBlockPuzzle = require("./router/random-block-puzzle");
 const alienHunter = require("./router/alien-hunter");
 const jumpRace = require("./router/jump-race");
 
+const Room = require("./modules/Room");
+const Player = require("./modules/Player");
+const Flag = require("./modules/Flag");
+const Rank = require("./modules/Rank");
+
+// 방문자 수 체크 
 let visitNumber = 0;
 let lastDate;
 
+// static 사용
 app.use(express.static("public"));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -222,135 +229,6 @@ io.on("connection", async (socket) => {
         }
     });
 });
-
-class Room {
-    constructor(roomId, flag, rank) {
-        this.name = roomId;
-        this.members = {};
-        this.inGamePlayers = {};
-        this.gravity = 1;
-        this.flag = flag;
-        this.gameStart = false;
-        this.rank = rank;
-    }
-
-    pushMember(player) {
-        this.members[player.getId()] = player;
-    }
-
-    popMember(playerId) {
-        if (playerId in this.members) {
-            delete this.members[playerId];
-        }
-    }
-
-    getMembers() {
-        return this.members;
-    }
-}
-
-class Player {
-    constructor(id, nickName) {
-        this.id = id;
-        this.nickName = nickName;
-        this.width = 50;
-        this.height = 50;
-        this.positionX = 200 - this.width / 2;
-        this.positionY = 500 - this.height / 2;
-        this.speed = 10;
-        this.getFlag = false;
-        this.ready = false;
-        this.waiting = true;
-        this.color =
-            "rgba(" +
-            randomNumber(50, 200) +
-            "," +
-            randomNumber(50, 200) +
-            "," +
-            randomNumber(50, 200) +
-            "," +
-            0.7 +
-            ")";
-    }
-
-    getId() {
-        return this.id;
-    }
-
-    setState(positionX, positionY, getFlag, waiting) {
-        this.positionX = positionX;
-        this.positionY = positionY;
-        this.getFlag = getFlag;
-        this.waiting = waiting;
-    }
-}
-
-class Flag {
-    constructor() {
-        this.positionX = 290;
-        this.positionY = 200;
-        this.taken = false;
-    }
-
-    setState(positionX, positionY, taken) {
-        this.positionX = positionX;
-        this.positionY = positionY;
-        this.taken = taken;
-    }
-}
-
-class Rank {
-    constructor() {
-        this.rankList = [];
-    }
-
-    pushScore(player) {
-        if (player.waiting === false) {
-            let isPlayerInList = false;
-            for (let i = 0; i < this.rankList.length; i++) {
-                if (player.id === this.rankList[i].id) {
-                    this.rankList[i].score = player.score;
-                    isPlayerInList = true;
-                }
-            }
-            if (isPlayerInList === false) {
-                this.rankList.push(player);
-            }
-        }
-    }
-
-    popScore(id) {
-        for (let i = 0; i < this.rankList.length; i++) {
-            if (id === this.rankList[i].id) {
-                this.rankList.splice(i, 1);
-            }
-        }
-    }
-
-    totalRank() {
-        const result = this.rankList.sort(function (a, b) {
-            return b.score - a.score;
-        });
-        return result;
-    }
-
-    winner(rankList) {
-        if (rankList.length === 1 && rankList[0].score >= 1) {
-            // console.log("a");
-            return rankList[0];
-        } else if (rankList.length >= 2 && rankList[0].score >= 2000) {
-            // console.log("b");
-            return rankList[0];
-        } else {
-            // console.log("c");
-            return undefined;
-        }
-    }
-}
-
-function randomNumber(min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-}
 
 app.use("/covid-19", covid19);
 app.use("/random-block-puzzle", randomBlockPuzzle);
