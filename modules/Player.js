@@ -22,10 +22,12 @@ module.exports =  class Player {
             ")";
     }
 
+    // id 불러오기
     getId() {
         return this.id;
     }
 
+    // 플레이어 상태 업데이트
     setState(positionX, positionY, getFlag, waiting) {
         this.positionX = positionX;
         this.positionY = positionY;
@@ -34,6 +36,7 @@ module.exports =  class Player {
     }
 }
 
+// 임의의 정수 추출
 function randomNumber(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }

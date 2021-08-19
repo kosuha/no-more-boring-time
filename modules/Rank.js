@@ -3,6 +3,7 @@ module.exports = class Rank {
         this.rankList = [];
     }
 
+    // 랭크를 계산하기 위해 리스트에 플레이어를 추가
     pushScore(player) {
         if (player.waiting === false) {
             let isPlayerInList = false;
@@ -18,6 +19,7 @@ module.exports = class Rank {
         }
     }
 
+    // 리스트에서 제거
     popScore(id) {
         for (let i = 0; i < this.rankList.length; i++) {
             if (id === this.rankList[i].id) {
@@ -26,6 +28,7 @@ module.exports = class Rank {
         }
     }
 
+    // 랭크 계산하여 정렬
     totalRank() {
         const result = this.rankList.sort(function (a, b) {
             return b.score - a.score;
@@ -33,15 +36,13 @@ module.exports = class Rank {
         return result;
     }
 
+    // 승자 반환, 없을 시 undefined
     winner(rankList) {
         if (rankList.length === 1 && rankList[0].score >= 1) {
-            // console.log("a");
             return rankList[0];
         } else if (rankList.length >= 2 && rankList[0].score >= 2000) {
-            // console.log("b");
             return rankList[0];
         } else {
-            // console.log("c");
             return undefined;
         }
     }

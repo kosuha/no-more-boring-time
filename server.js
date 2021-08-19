@@ -106,24 +106,25 @@ app.get("/signin", (request, response) => {
 // socketIO
 let rooms = {};
 io.on("connection", async (socket) => {
-    console.log("user connected: ", socket.id);
-
+    // 방문자 수 체크
     moment.tz.setDefault("Asia/Seoul");
     let date = moment().format("DD");
     if (date != lastDate) {
         lastDate = date;
         visitNumber = 1;
     }
-
     io.emit("todayVisit", visitNumber);
 
+    // 접속이 끊어졌을 경우
     socket.on("disconnect", function () {
-        console.log("user disconnected: ", socket.id);
+        // 클라이언트에 나간 유저를 알림, 나간 유저의 플레이어 정보를 삭제
         if (socket.gameData != undefined) {
             io.to(socket.gameData.joinedRoomId).emit("disconnected", socket.id);
             rooms[socket.gameData.joinedRoomId].popMember(socket.id);
             rooms[socket.gameData.joinedRoomId].rank.popScore(socket.id);
             socket.leave(socket.gameData.joinedRoomId);
+
+            // 방에 멤버가 0명인 경우 방 삭제
             if (
                 Object.keys(rooms[socket.gameData.joinedRoomId].members)
                     .length === 0
@@ -133,16 +134,19 @@ io.on("connection", async (socket) => {
         }
     });
 
+    // 새로운 유저 접속 시
     socket.on("joinRoom", (data) => {
+        // 방이 없다면 방, 깃발, 랭크 생성
         if (rooms[data.roomId] === undefined) {
             const flag = new Flag();
             const rank = new Rank();
             rooms[data.roomId] = new Room(data.roomId, flag, rank);
         }
 
-        console.log(socket.id, "join room: ", data.roomId);
+        // 방에 입장
         socket.join(data.roomId);
 
+        // 플레이어 생성, 추가, gameData에 정보 입력
         let player = new Player(socket.id, data.nickName);
         rooms[data.roomId].pushMember(player);
         socket.gameData = {
@@ -151,34 +155,38 @@ io.on("connection", async (socket) => {
             roomData: rooms[data.roomId],
             flag: rooms[data.roomId].flag,
         };
+
+        // 클라이언트에게 플레이어 생성을 알림
         io.to(socket.gameData.joinedRoomId).emit(
             "generatePlayer",
             socket.gameData
         );
-
-        console.log(rooms[data.roomId].getMembers());
     });
 
+    // 클라이언트에게 게임 준비 신호를 받음
     socket.on("ready", (data) => {
         if (rooms[data.room].gameStart === false) {
             rooms[data.room].members[socket.id].ready = true;    
         }
     });
 
+    // 게임 상태 업데이트
     socket.on("update", (data) => {
         try {
+            // 게임 준비 체크
             let readyCheck = 0;
             for (let id in rooms[data.room].members) {
                 if (rooms[data.room].members[id].ready) {
                     readyCheck++;
                 }
             }
+            // 모두 준비되면 시작
             if (Object.keys(rooms[data.room].members).length === readyCheck) {
                 io.to(data.room).emit("start", rooms[data.room].members);
                 rooms[data.room].gameStart = true;
             }
             
-
+            // 깃발 상태
             const flagPositionX =
                 (data.flag.positionX / data.flag.canvasSize.x) * 400;
             const flagPositionY =
@@ -190,12 +198,14 @@ io.on("connection", async (socket) => {
                 data.flag.taken
             );
 
+            // 점수와 랭크
             rooms[data.room].rank.pushScore(data.player);
             const result = rooms[data.room].rank.totalRank();
             const winPlayer = rooms[data.room].rank.winner(result);
 
             io.to(data.room).emit("updateScore", result);
 
+            // 승자가 있다면 게임 종료
             if (winPlayer != undefined) {
                 const players = rooms[data.room].members;
                 if (rooms[data.room].gameStart === true) {
@@ -212,6 +222,7 @@ io.on("connection", async (socket) => {
                 rooms[data.room].rank.rankList = [];
             }
 
+            // 플레이어 상태
             const updatePlayer = rooms[data.room].getMembers()[socket.id];
             const positionX =
                 (data.player.positionX / data.player.canvasSize.x) * 400;
@@ -219,13 +230,13 @@ io.on("connection", async (socket) => {
                 (data.player.positionY / data.player.canvasSize.y) * 700;
             updatePlayer.setState(positionX, positionY, data.player.getFlag, data.player.waiting);
 
+            // 클라이언트에게 받은 정보를 다른 클라이언트에게 업데이트
             socket.broadcast.to(data.room).emit("update", {
                 player: updatePlayer,
                 flag: rooms[data.room].flag
             });
         } catch (error) {
             io.to(socket.id).emit("error");
-            console.log("ERROR:updatePosition: ", error);
         }
     });
 });
