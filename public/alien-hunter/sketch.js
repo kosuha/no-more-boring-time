@@ -22,8 +22,8 @@ let bullet;
 let button = [];
 let star = [];
 
-let canvasWidth;
-let canvasHeight;
+// let canvasWidth;
+// let canvasHeight;
 
 function preload() {
     title_1 = loadImage("assets/title_1.png");
@@ -37,15 +37,15 @@ function preload() {
 }
 
 function setup() {
-    if(window.innerWidth > window.innerHeight) {
-        canvasWidth = window.innerHeight;
-        canvasHeight = window.innerHeight;
-    } else {
-        canvasWidth = window.innerWidth;
-        canvasHeight = window.innerWidth;
-    }
+    // if(window.innerWidth > window.innerHeight) {
+    //     canvasWidth = window.innerHeight * (2 / 3);
+    //     canvasHeight = window.innerHeight * (2 / 3);
+    // } else {
+    //     canvasWidth = window.innerWidth * (2 / 3);
+    //     canvasHeight = window.innerWidth * (2 / 3);
+    // }
 
-    let cnv = createCanvas(canvasWidth, canvasHeight);
+    let cnv = createCanvas(500, 500);
     cnv.parent('sketch-holder'); //스케치가 '#sketch-holder'에 들어갑니다.
 
     opening.setVolume(0.1);
