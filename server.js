@@ -19,7 +19,6 @@ const io = require("socket.io")(http);
 const moment = require("moment");
 require("moment-timezone");
 
-const auth = require("./auth");
 const covid19 = require("./router/covid-19");
 const randomBlockPuzzle = require("./router/random-block-puzzle");
 const alienHunter = require("./router/alien-hunter");
@@ -38,6 +37,15 @@ let lastDate;
 app.use(express.static("public"));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+
+// 세션 검사
+const authenticateUser = (request, response, next) => {
+    if (request.isAuthenticated()) {
+        next();
+    } else {
+        response.status(301).redirect('/signin');
+    }
+};
 
 app.use(
     session({
@@ -95,12 +103,18 @@ app.get(
     }
 );
 
-app.get("/", auth, (request, response) => {
+app.get("/", authenticateUser, (request, response) => {
     response.sendFile(__dirname + "/index.html");
 });
 
 app.get("/signin", (request, response) => {
     response.sendFile(__dirname + "/signin.html");
+});
+
+app.post("/logout", authenticateUser, (request, response) => {
+    console.log("logout!");
+    request.logOut();
+    response.json({logout: true});
 });
 
 // socketIO
@@ -242,7 +256,8 @@ io.on("connection", async (socket) => {
 });
 
 app.use("/covid-19", covid19);
-app.use("/random-block-puzzle", randomBlockPuzzle);
+app.use("/random-block-puzzle", authenticateUser, randomBlockPuzzle);
+// app.use("/random-block-puzzle", randomBlockPuzzle);
 app.use("/alien-hunter", alienHunter);
 app.use("/jump-race", jumpRace);
 
