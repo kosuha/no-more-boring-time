@@ -363,7 +363,10 @@ async function getUserData() {
     });
 
     let result = await response.json();
-    // console.log(result, typeof(result));
+    
+    if (result.auth === false) {
+        window.location.href = "/signin";
+    }
 
     const myName = document.querySelector('#myName');
     const myImage = document.querySelector('#myImage');

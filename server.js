@@ -256,8 +256,7 @@ io.on("connection", async (socket) => {
 });
 
 app.use("/covid-19", covid19);
-app.use("/random-block-puzzle", authenticateUser, randomBlockPuzzle);
-// app.use("/random-block-puzzle", randomBlockPuzzle);
+app.use("/random-block-puzzle", randomBlockPuzzle);
 app.use("/alien-hunter", alienHunter);
 app.use("/jump-race", jumpRace);
 
