@@ -1,5 +1,3 @@
-// import { Block } from './block.js';
-
 class Next {
     constructor() {
         this.length = 3;
@@ -156,5 +154,3 @@ class Next {
         }
     }
 }
-
-// export { Next };

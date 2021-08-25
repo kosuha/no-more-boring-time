@@ -1,8 +1,3 @@
-// import { Table } from './modules/table.js';
-// import { Next } from './modules/next.js';
-// import { generateRankingTable, rankingData, uploadScore } from './modules/ranking.js';
-// import { kakaoInit } from './modules/kakaoInit.js';
-
 let isMobile = device_check();
 preventScaleUp();
 
@@ -429,5 +424,3 @@ function shareScore() {
 }
 
 shareScore();
-
-// export { table, isMobile };

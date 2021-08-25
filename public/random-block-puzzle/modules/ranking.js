@@ -1,5 +1,3 @@
-// import { isMobile } from '../app.js';
-
 function generateRankingTable() {
     const rankingTable = document.querySelector('#rankingTable');
     const fragment = document.createDocumentFragment();

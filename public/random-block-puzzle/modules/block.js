@@ -1,5 +1,3 @@
-// import { table } from '../app.js';
-
 class Block {
     constructor(_structure, _color) {
         this.structure = _structure;
@@ -165,5 +163,3 @@ class Block {
         }
     }
 }
-
-// export { Block };

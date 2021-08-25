@@ -259,5 +259,3 @@ class Table {
         this.setLines(linesToClear.length);
     }
 }
-
-// export { Table };
