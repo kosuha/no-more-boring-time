@@ -14,5 +14,3 @@ async function log(isMobile, profile, score) {
     let result = await response.json();
     console.log(result, typeof(result));
 }
-
-// export { log };
